@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+  <book ISBN="978-1-78328-953-0">
+    <title>RESTful Web Services with Dropwizard</title>
+    <description>The RESTful Web Services concept is constantly growing compared to SOAP technologies. Used by many API providers, RESTful has started to become the architecture of choice for the enterprise SOA as well. Dropwizard combines everything needed to create production ready RESTful Web Services, combining the most powerful, stable and well-known RESTful Java-based libraries. This practical guide will help you learn how to create, configure, and implement a dynamic Web Service application by showcasing practical examples using the most important modules of Dropwizard and combining them together.</description>
+  </book>
+  <book ISBN="978-1-4493-9321-2">
+    <title>Head First jQuery</title>
+    <description>Want to add more interactivity and polish to your websites? Discover how jQuery can help you build complex scripting functionality in just a few lines of code. With Head First jQuery, you'll quickly get up to speed on this amazing JavaScript library by learning how to navigate HTML documents while handling events, effects, callbacks, and animations. By the time you've completed the book, you'll be incorporating Ajax apps, working seamlessly with HTML and CSS, and handling data with PHP, MySQL and JSON. If you want to learn - and understand - how to create interactive web pages, unobtrusive script, and cool animations that don't kill your browser, this book is for you.</description>
+  </book>
+  <book ISBN="978-1-119-07085-6">
+    <title>Professional Python</title>
+    <description>Professional Python goes beyond the basics to teach beginner- and intermediate-level Python programmers the little-known tools and constructs that build concise, maintainable code. Design better architecture and write easy-to-understand code using highly adoptable techniques that result in more robust and efficient applications. Coverage includes Decorators, Context Managers, Magic Methods, Class Factories, Metaclasses, Regular Expressions, and more, including advanced methods for unit testing using asyncio and CLI tools. Each topic includes an explanation of the concept and a discussion on applications, followed by hands-on tutorials based on real-world scenarios. The "Python 3 first" approach covers multiple current versions, while ensuring long-term relevance. Python offers many tools and techniques for writing better code, but often confusing documentation leaves many programmers in the dark about how to use them. This book shines a light on these incredibly useful methods, giving you clear guidance toward building stronger applications.</description>
+  </book>
+  <book ISBN="978-1-4493-9991-7">
+    <title>Head First C</title>
+    <description>Ever wished you could learn C from a book? Head First C provides a complete learning experience for C and structured imperative programming. With a unique method that goes beyond syntax and how-to manuals, this guide not only teaches you the language, it helps you understand how to be a great programmer. You'll learn key areas such as language basics, pointers and pointer arithmetic, and dynamic memory management. Advanced topics include multi-threading and network programming - topics typically covered on a college-level course. We think your time is too valuable to waste struggling with new concepts. Using the latest research in cognitive science and learning theory to craft a multi-sensory learning experience, Head First C uses a visually rich format designed for the way your brain works, not a text-heavy approach that puts you to sleep.</description>
+  </book>
+</library>
+
