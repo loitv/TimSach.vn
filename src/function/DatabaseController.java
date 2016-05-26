@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import javax.swing.JOptionPane;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -60,7 +62,6 @@ public class DatabaseController {
 						dbv.getTfTitle2().setText(list.get(0));
 						dbv.getTfDesc().setText(list.get(2));
 						dbv.getTfPub().setText(list.get(3));
-						// dbv.getTfAuthor().setText(list.get(4));
 						dbv.getTfISBN1().setText(list.get(5));
 						dbv.getTfISBN2().setText(list.get(5));
 						dbv.getTfISBN3().setText(list.get(5));
@@ -110,6 +111,9 @@ public class DatabaseController {
 							dbv.getTfAu2ID2().setText(AuID2);
 						}
 
+						// Get link image cover
+						dbv.getTfImage().setText(tags.get(1).absUrl("src"));
+
 						// Set random number for these fields: Tong so, SL trong
 						// kho, SL cho muon, gia bia.
 						int total = new Random().nextInt(20) + 1;
@@ -128,10 +132,6 @@ public class DatabaseController {
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
-
-					// System.out.println(dbv.getTfAuthor2().getText().equals(""));
-					// System.out.println(dbv.getTfAuthor2().getText().equals(null));
-					// System.out.println(dbv.getTfAuthor2().getText().length());
 				}
 			}
 		});
@@ -168,7 +168,7 @@ public class DatabaseController {
 					if (count > 0) {
 						System.out.println("Sach da co trong thu vien");
 					} else {
-						updateBook("SACHTV2", isbn);
+						updateBook("SACHTV02", isbn);
 					}
 				}
 				if (dbv.getLib3().isSelected()) {
@@ -183,7 +183,7 @@ public class DatabaseController {
 					if (count > 0) {
 						System.out.println("Sach da co trong thu vien");
 					} else {
-						updateBook("SACHTV3", isbn);
+						updateBook("SACHTV03", isbn);
 					}
 				}
 			}
@@ -204,16 +204,17 @@ public class DatabaseController {
 				if (count > 0) {
 					System.out.println("Sach da co trong Database");
 				} else {
-					String query = "INSERT into THONGTINSACH values (?,?,?,?,?,?,?);";
+					String query = "INSERT into THONGTINSACH values (?,?,?,?,?,?,?,?);";
 					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
 							.prepareStatement(query)) {
 						insertStmt.setString(1, isbn);
-						insertStmt.setString(2, dbv.getTfCate().getText());
-						insertStmt.setString(3, dbv.getTfPub().getText());
-						insertStmt.setInt(4, Integer.parseInt(dbv.getTfYear().getText()));
-						insertStmt.setDouble(5, Double.parseDouble(dbv.getTfPrice().getText()));
-						insertStmt.setInt(6, Integer.parseInt(dbv.getTfPage().getText()));
-						insertStmt.setString(7, dbv.getTfLang().getText());
+						insertStmt.setString(2, dbv.getTfTitle1().getText());
+						insertStmt.setString(3, dbv.getTfCate().getText());
+						insertStmt.setString(4, dbv.getTfPub().getText());
+						insertStmt.setInt(5, Integer.parseInt(dbv.getTfYear().getText()));
+						insertStmt.setDouble(6, Double.parseDouble(dbv.getTfPrice().getText()));
+						insertStmt.setInt(7, Integer.parseInt(dbv.getTfPage().getText()));
+						insertStmt.setString(8, dbv.getTfLang().getText());
 						insertStmt.executeUpdate();
 					} catch (SQLException ex) {
 						ex.printStackTrace();
@@ -294,7 +295,7 @@ public class DatabaseController {
 				}
 			}
 		});
-		
+
 		// handle events for button 'update Tacgia-sach'
 		dbv.setButtonUpdateAuBookActionListener(new ActionListener() {
 			@Override
@@ -314,7 +315,7 @@ public class DatabaseController {
 				} catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-				
+
 				String isbn = dbv.getTfISBN3().getText();
 				int count = 0;
 				for (int i = 0; i < newISBNs.size(); i++) {
@@ -322,22 +323,24 @@ public class DatabaseController {
 						count++;
 					}
 				}
-				if (count > 0 ) {
+				if (count > 0) {
 					System.out.println("DB has been had the same data");
 				} else {
 					String auID1 = dbv.getTfAuID1().getText();
 					String query = "INSERT into tacgia_sach values (?,?);";
-					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection().prepareStatement(query)) {
+					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+							.prepareStatement(query)) {
 						insertStmt.setString(1, auID1);
 						insertStmt.setString(2, isbn);
 						insertStmt.executeUpdate();
 					} catch (SQLException ex) {
 						ex.printStackTrace();
 					}
-					
+
 					if (dbv.getTfAu2ID1().getText().length() > 0) {
 						String query2 = "INSERT into tacgia_sach values (?,?);";
-						try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection().prepareStatement(query2)) {
+						try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+								.prepareStatement(query2)) {
 							insertStmt.setString(1, dbv.getTfAu2ID1().getText());
 							insertStmt.setString(2, isbn);
 							insertStmt.executeUpdate();
@@ -348,7 +351,7 @@ public class DatabaseController {
 				}
 			}
 		});
-		
+
 		// handle event for button 'update XML'
 		dbv.setButtonUpdateXMLActionListener(new ActionListener() {
 			@Override
@@ -371,7 +374,26 @@ public class DatabaseController {
 				}
 			}
 		});
+
+		// handle event for button save Image
+		dbv.setButtonGetImageActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String isbn = dbv.getTfISBN4().getText();
+				String url = dbv.getTfImage().getText();
+				String dest = "WebContent/images/" + isbn + ".jpg";
+				try {
+					SaveImageFromURL.saveImage(url, dest);
+					JOptionPane.showMessageDialog(null, "Success!");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+
 	}
+
 
 	public void updateBook(String book, String isbn) {
 		String title = dbv.getTfTitle1().getText();
@@ -413,33 +435,38 @@ public class DatabaseController {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-
-		for (int i = 0; i < firstNames.size(); i++) {
+		int count = 0, i = 0;
+		for (i = 0; i < firstNames.size(); i++) {
 			if (firstName1.equalsIgnoreCase(firstNames.get(i)) & lastName1.equals(lastNames.get(i))) {
-				AuID = IDAuthors.get(i);
-				AuID2 = IDAuthors.get(i);
-			} else {
-				int number = IDAuthors.size();
-				String str1, str2 = Integer.toString(number + 1);
-				String str1a, str2a = Integer.toString(number + 2);
-				if (number < 8) {
-					str1a = "Au00";
-				} else if (number >= 8 & number < 98) {
-					str1a = "Au0";
-				} else {
-					str1a = "Au";
-				}
-				AuID2 = str1a + str2a;
-				if (number < 9) {
-					str1 = "Au00";
-				} else if (number >= 9 & number < 99) {
-					str1 = "Au0";
-				} else {
-					str1 = "Au";
-				}
-				AuID = str1 + str2;
+				count++;
+				break;
 			}
 		}
+		if (count > 0) {
+			AuID = IDAuthors.get(i);
+			AuID2 = IDAuthors.get(i);
+		} else {
+			int number = IDAuthors.size();
+			String str1, str2 = Integer.toString(number + 1);
+			String str1a, str2a = Integer.toString(number + 2);
+			if (number < 8) {
+				str1a = "Au00";
+			} else if (number >= 8 & number < 98) {
+				str1a = "Au0";
+			} else {
+				str1a = "Au";
+			}
+			AuID2 = str1a + str2a;
+			if (number < 9) {
+				str1 = "Au00";
+			} else if (number >= 9 & number < 99) {
+				str1 = "Au0";
+			} else {
+				str1 = "Au";
+			}
+			AuID = str1 + str2;
+		}
+
 		return AuID;
 	}
 
@@ -465,7 +492,7 @@ public class DatabaseController {
 		ISBNs2 = new ArrayList<String>();
 		try {
 			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from sachtv2;";
+			String query = "select * from sachtv02;";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.first()) {
 				System.out.println("Empty data!");
@@ -483,7 +510,7 @@ public class DatabaseController {
 		ISBNs3 = new ArrayList<String>();
 		try {
 			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from sachtv3;";
+			String query = "select * from sachtv03;";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.first()) {
 				System.out.println("Empty data!");

@@ -23,7 +23,7 @@ ul {
   margin: auto;
   width: 55%;
   min-height: 70px;
-  padding: 1em 2em;
+  padding: 1em 2em 1em 0em;
   
   border-top: none;
   border-radius: 0 0 5px 5px;

@@ -99,8 +99,12 @@
 				width: 500px;
 				height: 35px;
 				padding: 10px;
-				margin: 80px auto 50px;
+				margin: 80px auto 10px;
 				overflow: hidden;
+			}
+
+			#searchBy {
+				color: black;
 			}
 
 			#search, #submit {
@@ -192,35 +196,74 @@
 	<!-- trần -->
 	<body>
 		<header class = "main-header">
-    <a class="logo" href="#"></a>
-    <ul class="main-nav">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li class="dropdown">
-        <a href="#">Work</a>
-        <ul class="drop-nav">
-          <li><a href="#">Design</a></li>
-          <li><a href="#">Development</a></li>
-          <li class="flyout">
-            <a href="#">Photography</a>
-            <ul class="flyout-nav">
-              <li><a href="#">Nature</a></li>
-              <li><a href="#">People</a></li>
-              <li><a href="#">Pets</a></li>         
-            </ul>
-          </li>
-          <li><a href="#">Writing</a></li>       
-        </ul>
-      </li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-  </header>
-<div>
-		<form id="searchbox" action = "SearchC" method = "GET" accept-charset="UTF-8">
-			<input id="search" type="text" name = "searchString" placeholder="Type here">
-			<input id="submit" type="submit" value="Search">
-		</form>
-</div>
+			<a class="logo" href="index.html"> <img src="images/library1.png" /> </a>
+			<ul class="main-nav">
+
+				<li>
+					<a href="index.html">Trang chủ</a>
+				</li>
+				<li class="dropdown">
+					<a href="#">Thể loại</a>
+					<ul class="drop-nav">
+						<li class="flyout">
+							<a href="#">IT</a>
+							<ul class="flyout-nav">
+								<li>
+									<a href="#">Web Developement</a>
+								</li>
+								<li>
+									<a href="#">Programming</a>
+								</li>
+								<li>
+									<a href="#">Database</a>
+								</li>
+								<li>
+									<a href="#">Operating System</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<a href="#">lite</a>
+						</li>
+						<li>
+							<a href="#">ET</a>
+						</li>
+
+						<li>
+							<a href="#">Writing</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="#">About</a>
+				</li>
+				<li>
+					<a href="#">Contact</a>
+				</li>
+			</ul>
+		</header>
+		<div>
+			<form action = "SearchC" method = 'get' accept-charset="UTF-8">
+				<div id="searchbox">
+				<input id="search" type="text" name = "q" placeholder="Type here">
+				<input id="submit" type="submit" value="Search">
+				</div>
+				<div>
+					<p id = "searchBy">
+					<b>Search book by:</b>
+					<input type = "radio" name = "searchIn" value = "title" checked />
+					Title
+					<input type = "radio" name = "searchIn" value = "author" />
+					Author
+					<input type = "radio" name = "searchIn" value = "isbn" />
+					ISBN
+				</p>
+				</div>
+			</form>
+		</div>
+
+		
+
 		<section class="regular slider">
 			<div>
 				<img src="images/AH (3).jpg">

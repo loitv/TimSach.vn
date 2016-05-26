@@ -6,102 +6,85 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 <style type="text/css">
+h2 {
+	margin-left: 187px;
+}
+
 table {
-border-collapse:collapse;
-border-width:1px;
-border-style:solid;
-border-color:Silver;
-padding:3px;
+	border-collapse: collapse;
+	border-width: 1px;
+	border-style: solid;
+	border-color: Silver;
+	padding: 3px;
+	width: 70%;
 }
+
 td {
-border-width:1px;
-border-style:solid;
-border-color:Silver;
-padding:3px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: Silver;
+	padding: 3px;
 }
+
 .rh {
-background-color: #003b71;
-vertical-align:Top;
-color:White;
-font-family:Tahoma;
-font-size:10pt;
-font-weight: bold;
-text-align:Left;
+	background-color: #003b71;
+	vertical-align: Top;
+	color: White;
+	font-family: Tahoma;
+	font-size: 10pt;
+	font-weight: bold;
+	text-align: Left;
 }
+
 .rt {
-background-color:White;
-vertical-align:Top;
-color:Black;
-font-family:Tahoma;
-font-size:8pt;
-text-align:Left;
+	background-color: White;
+	vertical-align: Top;
+	color: Black;
+	font-family: Tahoma;
+	font-size: 8pt;
+	text-align: Left;
 }
 </style>
 </head>
 <body>
 	<%@ page import="control.*"%>
+	<%@ page import="function.*"%>
 	<%
-		String[] results = (String[]) request.getAttribute("result");
-		String[] ISBN = (String[]) request.getAttribute("ISBN");
-		String[][] info = (String[][]) request.getAttribute("Info");
+		String[] isbns = (String[]) request.getAttribute("isbn");
+		String[] titles = (String[]) request.getAttribute("title");
+		String[] images = (String[]) request.getAttribute("image");
+		String[] descs = (String[]) request.getAttribute("desc");
 	%>
-	<!--  
-	<%if (results.length == 0) {%>
-	No result!
-	<%} else {
-				for (int i = 0; i < results.length; i++) {%>
-	<p><%=results[i]%></p>
-	<%for (int j = 0; j < 6; j++) {%>
-	<p><%=info[i][j]%></p>
-	<%}
-				}
-			}%>
-	-->
 
 	<h2>Kết quả tìm kiếm</h2>
+
+	<!----------------------------------------------------------------------------------------------->
 	<%
-		if (results.length == 0) {
+		if (titles.length == 0) {
 	%>
-	Khong tim thay!
+	NOT FOUND!
 	<%
 		} else {
 	%>
-	<form method='get' action='Order'>
-	<table class="rwd-table">
-		<tr class = "rh">
-			<td>ISBN</td>
-			<td>Ten Sach</td>
-			<td>Linh vuc</td>
-			<td>Nha xuat ban</td>
-			<td>Nam phat hanh</td>
-			<td>Gia bia</td>
-			<td>Tai ban</td>
-			<td>So trang</td>
-			<td></td>
-		</tr>
+
+	<table class="rwd-table" cellspacing="5" align="center">
 		<%
-			for (int i = 0; i < results.length; i++) {
+			for (int i = 0; i < titles.length; i++) {
 		%>
-		<tr class = "rt">
-			<td><%=ISBN[i]%></td>
-			<td><%=results[i]%></td>
-			<%
-				for (int j = 0; j < 6; j++) {
-			%>
-			<td><%=info[i][j]%></td>
-			<%
-				}
-			%>
-			<td><input type='checkbox' name='id' value='<%=ISBN[i]%>'/></td>
+		<tr class="rt">
+			<td><img src="<%=images[i]%>" height="200" width="173" /></td>
+			<td><a href="Book?isbn=<%=isbns[i]%>"><%=titles[i]%></a><br />
+				<p><%=descs[i]%></p></td>
 		</tr>
 		<%
 			}
 		%>
 	</table>
-	<p><input type='submit' value='ORDER' /></form>
+
 	<%
 		}
 	%>
+
 
 </body>
 </html>

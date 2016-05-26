@@ -25,5 +25,9 @@
     <title>Head First Python</title>
     <description>Ever wished you could learn Python from a book? Head First Python is a complete learning experience for Python that helps you learn the language through a unique method that goes beyond syntax and how-to manuals, helping you understand how to be a great Python programmer. You'll quickly learn the language's fundamentals, then move onto persistence, exception handling, web development, SQLite, data wrangling, and Google App Engine. You'll also learn how to write mobile apps for Android, all thanks to the power that Python gives you. We think your time is too valuable to waste struggling with new concepts. Using the latest research in cognitive science and learning theory to craft a multi-sensory learning experience, Head First Python uses a visually rich format designed for the way your brain works, not a text-heavy approach that puts you to sleep.</description>
   </book>
+  <book ISBN="978-1-118-83207-3">
+    <title>Professional AngularJS</title>
+    <description>Most of the existing guides to AngularJS struggle to provide simple and understandable explanations for more advanced concepts. As a result, some developers who understand all the basic concepts of AngularJS struggle when it comes to building more complex real-world applications. Professional AngularJS provides a thorough understanding of AngularJS, covering everything from basic concepts, such as directives and data binding, to more advanced concepts like transclusion, build systems, and automated integration testing. In addition to explaining the features of AngularJS, this book distills real-world experience on how these features fit together to enable teams to work together more effectively in building extraordinary apps.</description>
+  </book>
 </library>
 

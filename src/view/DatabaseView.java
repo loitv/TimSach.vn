@@ -19,11 +19,11 @@ public class DatabaseView extends JFrame {
 	private JLabel lbURL, lbUpdateSach, lbUpdateInfo, lbUpdateAuBook, lbUpdateAu, lbUpdateXML, lbISBN1, lbISBN2,
 			lbISBN3, lbISBN4, lbTitle1, lbTitle2, lbTotal, lbRemain, lbOnLoan, lbCategory, lbPublisher, lbYear, lbPrice,
 			lbPage, lbLang, lbDesc, lbAuID1, lbAuID2, lbAu2ID1, lbAu2ID2, lbAuFirstName, lbAuFirstName2, lbAuLastName,
-			lbAuLastName2, lbAuthor, lbAuthor2;
+			lbAuLastName2, lbAuthor, lbAuthor2, lbImage;
 	private JTextField tfURL, tfISBN1, tfISBN2, tfISBN3, tfISBN4, tfTitle1, tfTitle2, tfTotal, tfRemain, tfOnLoan,
 			tfCate, tfPub, tfYear, tfPrice, tfPage, tfLang, tfAuID1, tfAuID2, tfAu2ID1, tfAu2ID2, tfAuFirstName,
-			tfAuLastName, tfAuFirstName2, tfAuLastName2, tfDesc, tfAuthor, tfAuthor2;
-	private JButton btnParse, btnUpdateSach, btnUpdateInfo, btnUpdateAuBook, btnUpdateAu, btnUpdateXML;
+			tfAuLastName, tfAuFirstName2, tfAuLastName2, tfDesc, tfAuthor, tfAuthor2, tfImage;
+	private JButton btnParse, btnUpdateSach, btnUpdateInfo, btnUpdateAuBook, btnUpdateAu, btnUpdateXML, btnGetImage;
 
 	private JRadioButton lib1, lib2, lib3;
 	private ButtonGroup lib;
@@ -31,7 +31,7 @@ public class DatabaseView extends JFrame {
 	public DatabaseView() {
 		super("Update Database");
 		setSize(750, 650);
-		setLayout(new GridLayout(23, 1, 5, 5));
+		setLayout(new GridLayout(24, 1, 5, 5));
 
 		JPanel panel1 = new JPanel();
 		panel1.setLayout(new BorderLayout(5, 5));
@@ -291,6 +291,16 @@ public class DatabaseView extends JFrame {
 		panel16.add(lbDesc, BorderLayout.WEST);
 		panel16.add(tfDesc, BorderLayout.CENTER);
 		add(panel16);
+		
+		JPanel panel16a = new JPanel();
+		panel16a.setLayout(new BorderLayout(5, 5));
+		lbImage = new JLabel("Link ảnh bìa");
+		tfImage = new JTextField();
+		btnGetImage = new JButton("Lưu ảnh");
+		panel16a.add(lbImage, BorderLayout.WEST);
+		panel16a.add(tfImage, BorderLayout.CENTER);
+		panel16a.add(btnGetImage, BorderLayout.EAST);
+		add(panel16a);
 
 		JPanel panel17 = new JPanel();
 		add(panel17);
@@ -338,6 +348,10 @@ public class DatabaseView extends JFrame {
 
 	public void setButtonUpdateXMLActionListener(ActionListener al) {
 		this.btnUpdateXML.addActionListener(al);
+	}
+	
+	public void setButtonGetImageActionListener(ActionListener al) {
+		this.btnGetImage.addActionListener(al);
 	}
 
 	// GETTER SETTER METHODS
@@ -484,6 +498,11 @@ public class DatabaseView extends JFrame {
 
 	public JTextField getTfAuthor2() {
 		return tfAuthor2;
+	}
+	
+
+	public JTextField getTfImage() {
+		return tfImage;
 	}
 
 	// Main

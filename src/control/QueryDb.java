@@ -4,164 +4,173 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 public class QueryDb {
 
 	static Statement stmt = null;
-	private static ArrayList<String> dbTitle;
-	private static ArrayList<String> dbISBN;
-
-	private List<String> dbTempTitle;
-	private int soLuong;
-	// private static ArrayList<String> dbTempTitle;
+	private XMLProcessing xml;
+	private static ArrayList<String> bookInfos;
+	private static ArrayList<String> libstatus;
+	private static ArrayList<String> authors;
+	private static String[] libstatuss;
+	private static String[] bookInfoss;
+	private static String[] authorss;
 
 	public QueryDb() {
-		try {
-			dbTempTitle = new ArrayList<String>();
-			stmt = ConnectDb.getConnection().createStatement();
-			String query1 = "select * from SACH;";
-			ResultSet rs = stmt.executeQuery(query1);
-			if (!rs.first()) {
-				// System.out.println("Empty data!");
-			} else {
-				do {
-					dbTempTitle.add(rs.getString("tenSach"));
-				} while (rs.next());
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-
-		soLuong = dbTempTitle.size();
 	}
 
-	public QueryDb(String query) {
+	public QueryDb(String isbn) {
+		bookInfos = new ArrayList<String>();
+		String query = "select * from THONGTINSACH where isbn like '" + isbn + "';";
 		try {
-			dbTitle = new ArrayList<String>();
-			dbISBN = new ArrayList<String>();
 			stmt = ConnectDb.getConnection().createStatement();
-			// String query = "select * from song;";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.first()) {
 				// System.out.println("Empty data!");
 			} else {
 				do {
-					dbTitle.add(rs.getString("tenSach"));
-					dbISBN.add(rs.getString("isbn"));
+					bookInfos.add(rs.getString("tenSach")); // 0
+					bookInfos.add(rs.getString("linhvuc")); // 1
+					bookInfos.add(rs.getString("nxb")); // 2
+					bookInfos.add(rs.getString("namxb")); // 3
+					bookInfos.add(rs.getString("giabia")); // 4
+					bookInfos.add(rs.getString("sotrang")); // 5
+					bookInfos.add(rs.getString("ngonngu")); // 6
 				} while (rs.next());
 			}
 
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
+
+		xml = new XMLProcessing();
+		xml.readXML();
+		ArrayList<String> isbns = XMLProcessing.getISBNs();
+		ArrayList<String> descs = XMLProcessing.getDescs();
+		int i = 0;
+		for (i = 0; i < isbns.size(); i++) {
+			if (isbn.equals(isbns.get(i))) {
+				break;
+			}
+		}
+		String desc = descs.get(i);
+		bookInfos.add(desc); // 7
+		String imageUrl = "images/" + isbn + ".jpg";
+		bookInfos.add(imageUrl); // 8
+
+		// query libraries 1
+		libstatus = new ArrayList<String>();
+		queryLibs("sach", isbn);
+		queryLibs("sachtv02", isbn);
+		queryLibs("sachtv03", isbn);
+
+		// query author
+		String query1 = "select tacgia.firstName, tacgia.lastName from tacgia, tacgia_sach where tacgia_sach.isbn = '"
+				+ isbn + "' and tacgia.IDAuthor=tacgia_sach.IDtacgia;";
+		authors = new ArrayList<String>();
+		try {
+			stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query1);
+			if (!rs.first()) {
+				// System.out.println("Empty data!");
+			} else {
+				do {
+					authors.add(rs.getString("firstName"));
+					authors.add(rs.getString("lastName"));
+				} while (rs.next());
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
+		authorss = new String[authors.size()];
+		for (int j = 0; j < authors.size(); j++) {
+			authorss[j] = authors.get(j);
+		}
+		libstatuss = new String[libstatus.size()];
+		for (int j = 0; j < libstatus.size(); j++) {
+			libstatuss[j] = libstatus.get(j);
+		}
+		bookInfoss = new String[bookInfos.size()];
+		for (int j = 0; j < bookInfos.size(); j++) {
+			bookInfoss[j] = bookInfos.get(j);
+		}
 	}
 
-	public String[][] getInnfoBook() {
-		String[][] infoBooks = new String[dbISBN.size()][6];
-
-		for (int i = 0; i < dbISBN.size(); i++) {
-			String query1 = "select * from thongtinsach where isbn like " + dbISBN.get(i);
-			try {
-				stmt = ConnectDb.getConnection().createStatement();
-				ResultSet rs = stmt.executeQuery(query1);
-				if (!rs.first()) {
-					// System.out.println("Empty data!");
+	// query libraries
+	public void queryLibs(String dbName, String isbn) {
+		String status;
+		String query = "select * from " + dbName + " where isbn like '" + isbn + "';";
+		String libID = "", libName = "", libAdd = "";
+		if (dbName.equalsIgnoreCase("sach")) {
+			libID = "TV001";
+			libName = "Thư viện Tạ Quang Bửu";
+			libAdd = "1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội";
+		} else if (dbName.equalsIgnoreCase("sachtv02")) {
+			libID = "TV002";
+			libName = "Thư viện Quốc gia";
+			libAdd = "31 Tràng Thi, Hàng Trống, Hoàn Kiếm, Hà Nội";
+		} else if (dbName.equalsIgnoreCase("sachtv03")) {
+			libID = "TV003";
+			libName = "Thư viện Hà Nội";
+			libAdd = "47 Bà Triệu, Hoàn Kiếm, Hà Nội";
+		}
+		try {
+			stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (!rs.first()) {
+				// System.out.println("Empty data!");
+			} else {
+				int remain = rs.getInt("sltrongkho");
+				if (remain < 1) {
+					status = "On Loan";
 				} else {
-					do {
-						infoBooks[i][0] = rs.getString("linhvuc");
-						infoBooks[i][1] = rs.getString("nxb");
-						infoBooks[i][2] = Integer.toString(rs.getInt("namXb"));
-						infoBooks[i][3] = Double.toString(rs.getDouble("giaBia"));
-						infoBooks[i][4] = Integer.toString(rs.getInt("taiBan"));
-						infoBooks[i][5] = Integer.toString(rs.getInt("soTrang"));
-					} while (rs.next());
+					status = "Available";
 				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				libstatus.add(libID);
+				libstatus.add(libName);
+				libstatus.add(libAdd);
+				libstatus.add(status);
 			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
 		}
-		return infoBooks;
 	}
 
-	public List<String> getData(String query) {
-
-		String tenSach = null;
-		query = query.toLowerCase();
-		List<String> matched = new ArrayList<String>();
-		for (int i = 0; i < soLuong; i++) {
-			tenSach = dbTempTitle.get(i).toLowerCase();
-			if (tenSach.startsWith(query)) {
-				matched.add(dbTempTitle.get(i));
-			}
-		}
-		return matched;
+	public static String[] getLibstatuss() {
+		return libstatuss;
 	}
 
-	public static ArrayList<String> getDbTitle() {
-		return dbTitle;
+	public static String[] getBookInfoss() {
+		return bookInfoss;
 	}
 
-	public static void setDbTitle(ArrayList<String> dbTitle) {
-		QueryDb.dbTitle = dbTitle;
-	}
-
-	public String[] getResult() {
-		String[] results = new String[dbTitle.size()];
-		for (int i = 0; i < dbTitle.size(); i++) {
-			results[i] = dbTitle.get(i);
-		}
-		return results;
-	}
-	
-	public String[] getISBN() {
-		String[] ISBNs = new String[dbISBN.size()];
-		for (int i = 0; i < dbISBN.size(); i++) {
-			ISBNs[i] = dbISBN.get(i);
-		}
-		return ISBNs;
+	public static String[] getAuthorss() {
+		return authorss;
 	}
 
 	public static void main(String[] args) {
-//		new QueryDb("select * from sach where tenSach like 'tôi thấy hoa vàng trên cỏ xanh'");
-//		System.out.println(dbTitle.get(0));
-//		System.out.println(dbISBN.get(0));
-//		String query = "select * from thongtinsach where isbn like " + dbISBN.get(0);
-//		try {
-//			stmt = ConnectDb.getConnection().createStatement();
-//			ResultSet rs = stmt.executeQuery(query);
-//			if (!rs.first()) {
-//				// System.out.println("Empty data!");
-//			} else {
-//				do {
-//					System.out.println(rs.getString("linhvuc"));
-//					System.out.println(rs.getString("nxb"));
-//					System.out.println(rs.getInt("namXb"));
-//					System.out.println(rs.getDouble("giaBia"));
-//					System.out.println(rs.getInt("taiBan"));
-//					System.out.println(rs.getInt("soTrang"));
-//				} while (rs.next());
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 
-		String[][] demo = new String[2][3];
-		demo[0][0] = "1";
-		demo[0][1] = "2";
-		demo[0][2] = "3";
-		demo[1][0] = "4";
-		demo[1][1] = "5";
-		demo[1][2] = "6";
-		
-		for (int i = 0; i < 2; i++) {
-			System.out.println("Luot: " + i);
-			for (int j = 0; j < 3; j ++) {
-				System.out.println(demo[i][j]);
+		// new QueryDb("978-1-4493-9321-2");
+		ArrayList<String> list = new ArrayList<String>();
+		String query = "select tacgia.firstName, tacgia.lastName from tacgia, tacgia_sach where tacgia_sach.isbn = '978-1-4493-9321-2' and tacgia.IDAuthor=tacgia_sach.IDtacgia;";
+		try {
+			stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (!rs.first()) {
+				// System.out.println("Empty data!");
+			} else {
+				do {
+					list.add(rs.getString("firstName"));
+					list.add(rs.getString("lastName"));
+				} while (rs.next());
 			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
 		}
 
+		for (String l : list) {
+			System.out.println(l);
+		}
 	}
 }

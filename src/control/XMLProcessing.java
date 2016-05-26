@@ -30,7 +30,7 @@ public class XMLProcessing {
 		descs = new ArrayList<String>();
 
 		SAXBuilder builder = new SAXBuilder();
-		File xmlFile = new File("library1.xml");
+		File xmlFile = new File("D:\\Documents\\JavaJEE\\TimSach.vn\\WebContent\\library1.xml");
 		try {
 			Document document = (Document) builder.build(xmlFile);
 			Element rootNode = document.getRootElement();
@@ -75,7 +75,8 @@ public class XMLProcessing {
 
 			// display nice nice
 			xmlOutput.setFormat(Format.getPrettyFormat());
-			xmlOutput.output(doc, new FileWriter("library1.xml"));
+			xmlOutput.output(doc, new FileWriter("D:\\Documents\\JavaJEE\\TimSach.vn\\WebContent\\library1.xml"));
+//			xmlOutput.output(doc, new FileWriter("D:\\Portable Softwares\\Eclipse-JEE-Mars1\\library1.xml"));
 
 			System.out.println("File Saved!");
 		} catch (IOException io) {
