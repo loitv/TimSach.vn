@@ -62,7 +62,7 @@ td {
 	<%
 		if (titles.length == 0) {
 	%>
-	NOT FOUND!
+	<h2>NOT FOUND!</h2>
 	<%
 		} else {
 	%>
@@ -73,7 +73,7 @@ td {
 		%>
 		<tr class="rt">
 			<td><img src="<%=images[i]%>" height="200" width="173" /></td>
-			<td><a href="Book?isbn=<%=isbns[i]%>"><%=titles[i]%></a><br />
+			<td><a href="Book?isbn=<%=isbns[i]%>"><b><%=titles[i]%></b></a><br />
 				<p><%=descs[i]%></p></td>
 		</tr>
 		<%

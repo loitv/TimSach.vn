@@ -10,24 +10,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import function.UnAccent;
+
 /**
  * Servlet implementation class SearchC
  */
-@WebServlet("/SearchC")
-public class SearchC extends HttpServlet {
+@WebServlet("/Search")
+public class Search extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private ArrayList<Integer> indexs;
 	private ArrayList<String> results;
-	private String search, searchIn;
+	private String search, type;
 	private XMLProcessing xml;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public SearchC() {
+	public Search() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -36,48 +37,78 @@ public class SearchC extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		// response.getWriter().append("Served at:
 		// ").append(request.getContextPath()) trần;
 		request.setCharacterEncoding("UTF-8");
 		search = request.getParameter("q");
-		searchIn = request.getParameter("searchIn");
-		
+		type = request.getParameter("type");
+//		category = request.getParameter("category");
+
 		xml = new XMLProcessing();
 		xml.readXML();
 		ArrayList<String> titles = XMLProcessing.getTitles();
 		ArrayList<String> isbns = XMLProcessing.getISBNs();
 		ArrayList<String> descs = XMLProcessing.getDescs();
-		
+
 		ArrayList<String> sTitles = new ArrayList<String>();
 		ArrayList<String> sIsbns = new ArrayList<String>();
 		ArrayList<String> sDescs = new ArrayList<String>();
-		
-		if (searchIn.equals("isbn")) {
+
+		// search by isbn
+		if (type.equals("isbn")) {
 			search(isbns, search);
 			sIsbns = results;
-			for (int i = 0; i < indexs.size(); i ++) {
+			for (int i = 0; i < indexs.size(); i++) {
 				sTitles.add(titles.get(indexs.get(i)));
 				sDescs.add(descs.get(indexs.get(i)));
 			}
-			
+
 		}
-		if (searchIn.equals("title")) {
+		// search by title
+		if (type.equals("title")) {
 			search(titles, search);
 			sTitles = results;
-			for (int i = 0; i < indexs.size(); i ++) {
+			for (int i = 0; i < indexs.size(); i++) {
 				sIsbns.add(isbns.get(indexs.get(i)));
 				sDescs.add(descs.get(indexs.get(i)));
 			}
 		}
+		// search by author
+		if (type.equals("author")) {
+			ArrayList<String> ISBNs = new ArrayList<String>();
+			ISBNs = QueryDb.queryAuthorName(search);
+			sIsbns = ISBNs;
+			for (int j = 0; j < ISBNs.size(); j++) {
+				search(isbns, ISBNs.get(j));
+				for (int i = 0; i < indexs.size(); i++) {
+					sTitles.add(titles.get(indexs.get(i)));
+					sDescs.add(descs.get(indexs.get(i)));
+				}
+			}
+		}
+
+		// search by category
+		if (type.equals("category")){
+			ArrayList<String> ISBNs = new ArrayList<String>();
+			ISBNs = QueryDb.queryCate(search);
+			sIsbns = ISBNs;
+			for (int j = 0; j < ISBNs.size(); j++) {
+				search(isbns, ISBNs.get(j));
+				for (int i = 0; i < indexs.size(); i++) {
+					sTitles.add(titles.get(indexs.get(i)));
+					sDescs.add(descs.get(indexs.get(i)));
+				}
+			}
+		}
 		
+		// process result and forward to search.jsp
 		String[] isbns2 = new String[sTitles.size()];
 		String[] titles2 = new String[sTitles.size()];
 		String[] descs2 = new String[sTitles.size()];
 		String[] images = new String[sTitles.size()];
-		
+
 		if (!sTitles.isEmpty()) {
-			for (int i = 0; i < sTitles.size(); i ++) {
+			for (int i = 0; i < sTitles.size(); i++) {
 				isbns2[i] = sIsbns.get(i);
 				titles2[i] = sTitles.get(i);
 				descs2[i] = sDescs.get(i);
@@ -88,9 +119,9 @@ public class SearchC extends HttpServlet {
 		request.setAttribute("title", titles2);
 		request.setAttribute("desc", descs2);
 		request.setAttribute("image", images);
-		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/SearchV.jsp");
+		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/search.jsp");
 		dispatcher.forward(request, response);
-		
+
 	}
 
 	/**
@@ -99,48 +130,26 @@ public class SearchC extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-	
+
 	public void search(ArrayList<String> array, String search) {
-		results = new ArrayList<String>();
+		UnAccent ua = new UnAccent(); // chuyen ky tu dac biet thanh ky tu
+										// thuong
+		results = new ArrayList<String>(); // chua ket qua tim kiem
 		int count = 0;
-		indexs = new ArrayList<Integer>();
-		for (int i = 0; i < array.size(); i ++) {
-			if(array.get(i).toLowerCase().contains(search.toLowerCase())) {
+		indexs = new ArrayList<Integer>(); //
+		for (int i = 0; i < array.size(); i++) {
+			if (ua.unAccent(array.get(i)).toLowerCase().contains(search.toLowerCase())) {
 				count++;
 				indexs.add(i);
 			}
 		}
 		if (count > 0) {
-			for(int i = 0; i < indexs.size(); i ++) {
+			for (int i = 0; i < indexs.size(); i++) {
 				results.add(array.get(indexs.get(i)));
 			}
 		} else {
 		}
 	}
-//	public static void main(String[] args) {
-//		XMLProcessing xml = new XMLProcessing();
-//		xml.readXML();
-//		ArrayList<String> titles = XMLProcessing.getTitles();
-//		ArrayList<Integer> indexs = new ArrayList<Integer>();
-//		String search = "head";
-//		int count = 0;
-//		for (int i = 0; i < titles.size(); i ++) {
-//			if(titles.get(i).toLowerCase().contains(search.toLowerCase())) {
-//				count++;
-//				indexs.add(i);
-//			}
-//		}
-//		if (count > 0) {
-//			System.out.println("FOUND!");
-//			for(int i = 0; i < indexs.size(); i ++) {
-//				System.out.println(titles.get(indexs.get(i)));
-//			}
-//		} else {
-//			System.out.println("NOT FOUND!");
-//		}
-//	}
-
 }

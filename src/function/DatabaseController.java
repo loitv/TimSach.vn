@@ -58,6 +58,7 @@ public class DatabaseController {
 						for (Element a : tags) {
 							list.add(a.text());
 						}
+						// gán thông tin cho các trường
 						dbv.getTfTitle1().setText(list.get(0));
 						dbv.getTfTitle2().setText(list.get(0));
 						dbv.getTfDesc().setText(list.get(2));
@@ -153,7 +154,7 @@ public class DatabaseController {
 					if (count > 0) {
 						System.out.println("Sach da co trong thu vien");
 					} else {
-						updateBook("SACH", isbn);
+						updateBook("SACHTV01", isbn);
 					}
 				}
 				if (dbv.getLib2().isSelected()) {
@@ -386,7 +387,6 @@ public class DatabaseController {
 					SaveImageFromURL.saveImage(url, dest);
 					JOptionPane.showMessageDialog(null, "Success!");
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -474,7 +474,7 @@ public class DatabaseController {
 		ISBNs1 = new ArrayList<String>();
 		try {
 			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from sach;";
+			String query = "select * from sachtv01;";
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.first()) {
 				System.out.println("Empty data!");
@@ -549,6 +549,54 @@ public class DatabaseController {
 			authors.add(st.nextToken().trim());
 		}
 		return authors;
+	}
+	
+	public static void insertAcc(String id, String pwd) {
+		String query = "INSERT into taikhoan values (?,?,?);";
+		try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+				.prepareStatement(query)) {
+			insertStmt.setString(1, id);
+			insertStmt.setString(2, pwd);
+			insertStmt.setInt(3, 2);
+			insertStmt.executeUpdate();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		
+		String query1 = "INSERT into thongtincanhan values (?,?,?,?,?,?,?);";
+		try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+				.prepareStatement(query1)) {
+			insertStmt.setString(1, id);
+			insertStmt.setString(2, null);
+			insertStmt.setString(3, null);
+			insertStmt.setString(4, null);
+			insertStmt.setString(5, null);
+			insertStmt.setString(6, null);
+			insertStmt.setString(7, null);
+			insertStmt.executeUpdate();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	// upadate personal information
+	public static void updatePerInfo(ArrayList<String> personalInfo) {
+		String query = "UPDATE thongtincanhan SET name=? ,gender=?, birthday=?, address=?, phone=?, email=? WHERE id=?";
+		try (PreparedStatement addStmt = (PreparedStatement) ConnectDb.getConnection()
+				.prepareStatement(query)) {
+
+			addStmt.setString(1, personalInfo.get(1));
+			addStmt.setString(2, personalInfo.get(2));
+			addStmt.setString(3, personalInfo.get(3));
+			addStmt.setString(4, personalInfo.get(4));
+			addStmt.setString(5, personalInfo.get(5));
+			addStmt.setString(6, personalInfo.get(6));
+			addStmt.setString(7, personalInfo.get(0));
+			addStmt.executeUpdate();
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {

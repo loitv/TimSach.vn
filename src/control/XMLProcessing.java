@@ -14,6 +14,17 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 /*
  * this class for storing book's description in XML file 
  */
@@ -22,7 +33,7 @@ public class XMLProcessing {
 	private static ArrayList<String> titles;
 	private static ArrayList<String> descs;
 
-	// Read XML file to get information about: isbn, title and description
+	// Read XML file to get information about: isbn, title and description, trần
 	public void readXML() {
 
 		ISBNs = new ArrayList<String>();
@@ -45,6 +56,68 @@ public class XMLProcessing {
 			System.out.println(io.getMessage());
 		} catch (JDOMException jdomex) {
 			System.out.println(jdomex.getMessage());
+		}
+	}
+
+	public static void ReadXMLUTF8FileSAX() {
+		try {
+
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+
+			DefaultHandler handler = new DefaultHandler() {
+
+				boolean title = false;
+				boolean desc = false;
+
+				public void startElement(String uri, String localName, String qName, Attributes attributes)
+						throws SAXException {
+
+//					System.out.println("Start Element :" + qName);
+
+					if (qName.equalsIgnoreCase("title")) {
+						title = true;
+					}
+
+					if (qName.equalsIgnoreCase("description")) {
+						desc = true;
+					}
+				}
+
+				public void endElement(String uri, String localName, String qName) throws SAXException {
+
+//					System.out.println("End Element :" + qName);
+
+				}
+
+				public void characters(char ch[], int start, int length) throws SAXException {
+
+					System.out.println(new String(ch, start, length));
+
+					if (title) {
+//						System.out.println(new String(ch, start, length));
+						title = false;
+					}
+
+					if (desc) {
+						System.out.println(new String(ch, start, length));
+						desc = false;
+					}
+				}
+
+			};
+
+			File file = new File("D:\\Documents\\JavaJEE\\TimSach.vn\\WebContent\\library1.xml");
+			InputStream inputStream = new FileInputStream(file);
+			Reader reader = new InputStreamReader(inputStream, "UTF-8");
+
+			InputSource is = new InputSource(reader);
+			is.setEncoding("UTF-8");
+
+			saxParser.parse(is, handler);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -76,7 +149,8 @@ public class XMLProcessing {
 			// display nice nice
 			xmlOutput.setFormat(Format.getPrettyFormat());
 			xmlOutput.output(doc, new FileWriter("D:\\Documents\\JavaJEE\\TimSach.vn\\WebContent\\library1.xml"));
-//			xmlOutput.output(doc, new FileWriter("D:\\Portable Softwares\\Eclipse-JEE-Mars1\\library1.xml"));
+			// xmlOutput.output(doc, new FileWriter("D:\\Portable
+			// Softwares\\Eclipse-JEE-Mars1\\library1.xml"));
 
 			System.out.println("File Saved!");
 		} catch (IOException io) {
@@ -94,5 +168,9 @@ public class XMLProcessing {
 
 	public static ArrayList<String> getDescs() {
 		return descs;
+	}
+	
+	public static void main(String[] args) {
+		ReadXMLUTF8FileSAX();
 	}
 }
