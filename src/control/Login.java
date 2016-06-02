@@ -2,6 +2,7 @@ package control;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,6 +34,14 @@ public class Login extends HttpServlet {
 			out.println("<h3>Login successfull!</h3>");
 			out.println("</body></html>");
 			request.getSession().setAttribute("user", id);
+			
+			ArrayList<String> userInfo = QueryDb.queryAccInfo(id);
+			String[] userInfor = new String[userInfo.size()];
+			for (int i = 0; i < userInfo.size(); i ++) {
+				userInfor[i] = userInfo.get(i);
+			}
+			request.getSession().setAttribute("userInfo", userInfor);
+			
 			response.sendRedirect("index.jsp");
 		} else {
 			out.println("<html><head><title>Login</title></head><body>");

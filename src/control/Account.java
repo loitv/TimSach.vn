@@ -23,10 +23,13 @@ public class Account extends HttpServlet {
 		String id = request.getParameter("id");
 		ArrayList<String> userInfo = QueryDb.queryAccInfo(id);
 		String[] userInfor = new String[userInfo.size()];
+		
 		for (int i = 0; i < userInfo.size(); i ++) {
 			userInfor[i] = userInfo.get(i);
 		}
-		request.setAttribute("userInfo", userInfor);
+		
+		request.getSession().setAttribute("user", id);
+		
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/account.jsp");
 		dispatcher.forward(request, response);
 	}

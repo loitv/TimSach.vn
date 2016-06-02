@@ -1,12 +1,5 @@
 
-@font-face {
-	font-family: 'icomoon';
-	src:url('http://treehouse-code-samples.s3.amazonaws.com/CSS-DD/codepen/stage-13/fonts/icomoon.eot');
-	src:url('http://treehouse-code-samples.s3.amazonaws.com/CSS-DD/codepen/stage-13/fonts/icomoon.eot?#iefix') format('embedded-opentype'),
-		url('http://treehouse-code-samples.s3.amazonaws.com/CSS-DD/codepen/stage-13/fonts/icomoon.woff') format('woff'),
-		url('http://treehouse-code-samples.s3.amazonaws.com/CSS-DD/codepen/stage-13/fonts/icomoon.ttf') format('truetype'),
-		url('http://treehouse-code-samples.s3.amazonaws.com/CSS-DD/codepen/stage-13/fonts/icomoon.svg#icomoon') format('svg');
-}
+
 body {
 	margin: 0;
 	background: #ecf0f1;
@@ -19,9 +12,31 @@ ul {
   padding: 0;
   margin: 0; 
 }
+
+#accountfield {
+	margin: auto;
+  width: 68.5%;
+  min-height: 20px;
+}
+#accounttext {
+	
+	width: 170px;
+  border-radius: 0 0 25px 0px;
+  background: #2980b9;
+  color: white;
+  text-align: left;
+  padding-left:15px;
+  /*margin-left: 5px;*/
+}
+#accurl{
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+}
+
 .main-header {
   margin: auto;
-  width: 55%;
+  width: 66%;
   min-height: 70px;
   padding: 1em 2em 1em 0em;
   
@@ -107,3 +122,4 @@ ul {
 .flyout-nav {
   background: #395066;
 }
+

@@ -271,6 +271,9 @@ body {
 	}
 	%>
 	
+	<div>
+	<a href="Logout" onclick="window.location.reload(true);">Kill session</a>
+	</div>
 	
 	
 	<div>

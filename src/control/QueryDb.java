@@ -280,6 +280,24 @@ public class QueryDb {
 		}
 		return accInfo;
 	}
+	
+	public static String[] queryBook(String isbn) {
+		String query = "select * from sach where isbn = '" + isbn +"';";
+		String[] info = new String[2];
+		try {
+			stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (!rs.first()) {
+				
+			} else {
+				info[0] = rs.getString("tenSach");
+				info[1] = Double.toString(rs.getDouble("giabia"));
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return info;
+	}
 
 	public static String[] getLibstatuss() {
 		return libstatuss;
