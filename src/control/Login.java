@@ -21,6 +21,9 @@ public class Login extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		String uri = (String)request.getSession().getAttribute("uri");
+		
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 
@@ -30,9 +33,9 @@ public class Login extends HttpServlet {
 
 		boolean ok = QueryDb.queryAcc2(id, pwd);
 		if (ok) {
-			out.println("<html><head><title>Login</title></head><body>");
-			out.println("<h3>Login successfull!</h3>");
-			out.println("</body></html>");
+//			out.println("<html><head><title>Login</title></head><body>");
+//			out.println("<h3>Login successfull!</h3>");
+//			out.println("</body></html>");
 			request.getSession().setAttribute("user", id);
 			
 			ArrayList<String> userInfo = QueryDb.queryAccInfo(id);
@@ -42,13 +45,14 @@ public class Login extends HttpServlet {
 			}
 			request.getSession().setAttribute("userInfo", userInfor);
 			
-			response.sendRedirect("index.jsp");
+			response.sendRedirect(uri);
 		} else {
 			out.println("<html><head><title>Login</title></head><body>");
 			out.println("<h3>Login false!</h3>");
 			out.println("</body></html>");
 		}
 
+//		System.out.println(uri);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

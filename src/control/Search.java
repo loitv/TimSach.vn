@@ -1,49 +1,30 @@
 package control;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import function.UnAccent;
 
-/**
- * Servlet implementation class SearchC
- */
 @WebServlet("/Search")
 public class Search extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<Integer> indexs;
-	private ArrayList<String> results;
-	private String search, type;
-	private XMLProcessing xml;
+	private static ArrayList<Integer> indexs;
+	private static ArrayList<String> results;
+	private static XMLProcessing xml;
+	
+	private static String[] isbns2;
+	private static String[] titles2;
+	private static String[] descs2;
+	private static String[] images;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public Search() {
 		super();
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// response.getWriter().append("Served at:
-		// ").append(request.getContextPath()) trần;
-		request.setCharacterEncoding("UTF-8");
-		search = request.getParameter("q");
-		type = request.getParameter("type");
-//		category = request.getParameter("category");
-
+	public static void getResult(String type, String search) {
 		xml = new XMLProcessing();
 		xml.readXML();
 		ArrayList<String> titles = XMLProcessing.getTitles();
@@ -90,7 +71,21 @@ public class Search extends HttpServlet {
 		// search by category
 		if (type.equals("category")){
 			ArrayList<String> ISBNs = new ArrayList<String>();
-			ISBNs = QueryDb.queryCate(search);
+			ISBNs = QueryDb.queryCate("linhVuc", search);
+			sIsbns = ISBNs;
+			for (int j = 0; j < ISBNs.size(); j++) {
+				search(isbns, ISBNs.get(j));
+				for (int i = 0; i < indexs.size(); i++) {
+					sTitles.add(titles.get(indexs.get(i)));
+					sDescs.add(descs.get(indexs.get(i)));
+				}
+			}
+		}
+		
+		// search by publisher
+		if (type.equals("publisher")) {
+			ArrayList<String> ISBNs = new ArrayList<String>();
+			ISBNs = QueryDb.queryCate("nxb", search);
 			sIsbns = ISBNs;
 			for (int j = 0; j < ISBNs.size(); j++) {
 				search(isbns, ISBNs.get(j));
@@ -102,10 +97,10 @@ public class Search extends HttpServlet {
 		}
 		
 		// process result and forward to search.jsp
-		String[] isbns2 = new String[sTitles.size()];
-		String[] titles2 = new String[sTitles.size()];
-		String[] descs2 = new String[sTitles.size()];
-		String[] images = new String[sTitles.size()];
+		isbns2 = new String[sTitles.size()];
+		titles2 = new String[sTitles.size()];
+		descs2 = new String[sTitles.size()];
+		images = new String[sTitles.size()];
 
 		if (!sTitles.isEmpty()) {
 			for (int i = 0; i < sTitles.size(); i++) {
@@ -115,25 +110,9 @@ public class Search extends HttpServlet {
 				images[i] = "images/" + sIsbns.get(i) + ".jpg";
 			}
 		}
-		request.setAttribute("isbn", isbns2);
-		request.setAttribute("title", titles2);
-		request.setAttribute("desc", descs2);
-		request.setAttribute("image", images);
-		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/search.jsp");
-		dispatcher.forward(request, response);
-
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
-	}
-
-	public void search(ArrayList<String> array, String search) {
+	public static void search(ArrayList<String> array, String search) {
 		UnAccent ua = new UnAccent(); // chuyen ky tu dac biet thanh ky tu
 										// thuong
 		results = new ArrayList<String>(); // chua ket qua tim kiem
@@ -152,4 +131,22 @@ public class Search extends HttpServlet {
 		} else {
 		}
 	}
+
+	public static String[] getIsbns2() {
+		return isbns2;
+	}
+
+	public static String[] getTitles2() {
+		return titles2;
+	}
+
+	public static String[] getDescs2() {
+		return descs2;
+	}
+
+	public static String[] getImages() {
+		return images;
+	}
+	
+	
 }

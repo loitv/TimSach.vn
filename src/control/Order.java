@@ -1,9 +1,6 @@
 package control;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -12,85 +9,66 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
+import function.DatabaseController;
 
 @WebServlet("/Order")
 public class Order extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private List<String> orderBooks;
-
-	public Order() {
-		super();
-	}
+       
+    public Order() {
+        super();
+    }
 
 	@SuppressWarnings("unchecked")
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		request.setCharacterEncoding("UTF-8");
-		String libID = request.getParameter("libID");
-		String isbn = request.getParameter("isbn");
-		String[] info = QueryDb.queryBook(isbn);
-		String title = info[0];
-		String price = info[1];
-
-		HttpSession session = request.getSession();
-		
-		String[] date = (String[])session.getAttribute("date");
-		if (date == null) {
-			date = new String[2];
-			session.setAttribute("date", date);
-		}
-		date = getDate();
-		session.setAttribute("date", date);
-
-		orderBooks = (List<String>) session.getAttribute("orderSession");
-		if (orderBooks == null) {
-			orderBooks = new ArrayList<String>();
-			session.setAttribute("orderSession", orderBooks);
-		}
-
-		if (!(isbn == null)) {
-			int count = 0;
-			for (String item : orderBooks) {
-				if (isbn.equals(item)) {
-					count++;
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String confirm = request.getParameter("s");
+		List<String> orderBooks = (List<String>) request.getSession().getAttribute("orderSession");
+//		response.setContentType("text/jsp");
+//		PrintWriter out = response.getWriter();
+		if (confirm == null || orderBooks.size() == 0) {
+			response.sendRedirect("Cart");
+		} else {
+//				List<String> orderBooks = (List<String>) request.getSession().getAttribute("orderSession");
+				String[] date = (String[]) request.getSession().getAttribute("date");
+				String userID = (String) request.getSession().getAttribute("user");
+				String libID = orderBooks.get(3);
+				Double deposit = (double) 0;
+				
+				for (int i = 0; i < orderBooks.size(); i+=4) {
+					deposit += Double.parseDouble(orderBooks.get(i + 2));
 				}
-			}
-			if (count == 0) {
-				orderBooks.add(isbn);
-				orderBooks.add(title);
-				orderBooks.add(price);
-				orderBooks.add(libID);
-			}
+				String[] orderArray = new String[5];
+				orderArray[0] = userID;
+				orderArray[1] = libID;
+				orderArray[2] = date[0];
+				orderArray[3] = date[1];
+				orderArray[4] = Double.toString(deposit*0.5);
+
+				DatabaseController.updatePhieu(orderArray, orderBooks);
+				String IDPM = DatabaseController.getIDPM();
+//				out.println("<html><head><title>Login</title></head><body>");
+//				out.println("<%@ include file=\"header.jsp\" %><br><br>");
+//				out.println("<h3>Your order has been sent successfully!</h3>");
+//				out.println("</body></html>");
+				String[] orderBookArray = new String[orderBooks.size()];
+				for(int i = 0; i < orderBooks.size(); i ++) {
+					orderBookArray[i] = orderBooks.get(i);
+				}
+				request.getSession().removeAttribute("orderSession");
+				
+				request.setAttribute("orderArray", orderArray);
+				request.setAttribute("IDPM", IDPM);
+				request.setAttribute("orderBookArray", orderBookArray);
+				RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/order.jsp");
+				dispatcher.forward(request, response);
 		}
-		session.setAttribute("orderSession", orderBooks);
-
-		String[] orderArray = new String[orderBooks.size()];
-		for (int j = 0; j < orderBooks.size(); j++) {
-			orderArray[j] = orderBooks.get(j);
-			// System.out.println(orderBooks.get(j));
-
-		}
-		request.setAttribute("orderArray", orderArray);
-		request.setAttribute("date", date);
-		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/order.jsp");
-		dispatcher.forward(request, response);
-
-	}
-	
-	public static String[] getDate() {
-		String[] dateA = new String[2];
- 		SimpleDateFormat ft = new SimpleDateFormat("dd-MM-yyyy");
-		Calendar date = Calendar.getInstance();
-		dateA[0] = ft.format(date.getTime());
-		date.add(Calendar.MONTH, 2);
-		dateA[1] = ft.format(date.getTime());
-		return dateA;
+		
+		
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 

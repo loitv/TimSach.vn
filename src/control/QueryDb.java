@@ -188,17 +188,38 @@ public class QueryDb {
 		return ISBNs;
 	}
 
-	// query category
-	public static ArrayList<String> queryCate(String cate) {
+	// query by category and publisher
+	public static ArrayList<String> queryCate(String type, String q) {
 		ArrayList<String> ISBNs = new ArrayList<String>();
-		String input = cate;
-		if (cate.equals("vanhoc")) {
-			input = "Van hoc";
+		q = q.replace("'", "\\'");
+		String input = "'" + q + "'";
+		switch (q) {
+		case "vanhoc":
+			input = "'van hoc'";
+			break;
+		case "khtn":
+			input = "'Khoa hoc tu nhien'";
+			break;
+		case "it":
+			input = "'Programming', 'Web Development', 'Operating Systems', 'Datebases'";
+			break;
+
+		case "web":
+			input = "'Web Development'";
+			break;
+		case "os":
+			input = "'Operating Systems'";
+			break;
+		case "database":
+			input = "'Datebases'";
+			break;
+		case "et":
+			input = "'digital design'";
+			break;
 		}
-		if (cate.equals("khth")) {
-			input = "Khoa hoc tu nhien";
-		}
-		String query = "select * from sach where linhVuc like '" + input + "';";
+
+		String query = "select * from sach where " + type + " IN (" + input + ");";
+//		System.out.println(query);
 		try {
 			stmt = ConnectDb.getConnection().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
@@ -233,7 +254,7 @@ public class QueryDb {
 		}
 		return ok;
 	}
-	
+
 	// query account for login
 	public static boolean queryAcc2(String id, String pwd) {
 		String query = "select * from taikhoan where id = '" + id + "';";
@@ -256,16 +277,16 @@ public class QueryDb {
 		}
 		return ok;
 	}
-	
+
 	// query account for getInformation
 	public static ArrayList<String> queryAccInfo(String id) {
-		ArrayList<String> accInfo= new ArrayList<String>();
+		ArrayList<String> accInfo = new ArrayList<String>();
 		String query = "select * from thongtincanhan where id = '" + id + "';";
 		try {
 			stmt = ConnectDb.getConnection().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.first()) {
-//				ok = false;
+				// ok = false;
 			} else {
 				accInfo.add(id);
 				accInfo.add(rs.getString("name"));
@@ -275,20 +296,20 @@ public class QueryDb {
 				accInfo.add(rs.getString("phone"));
 				accInfo.add(rs.getString("email"));
 			}
-		}catch(SQLException ex) {
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 		return accInfo;
 	}
-	
+
 	public static String[] queryBook(String isbn) {
-		String query = "select * from sach where isbn = '" + isbn +"';";
+		String query = "select * from sach where isbn = '" + isbn + "';";
 		String[] info = new String[2];
 		try {
 			stmt = ConnectDb.getConnection().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			if (!rs.first()) {
-				
+
 			} else {
 				info[0] = rs.getString("tenSach");
 				info[1] = Double.toString(rs.getDouble("giabia"));
@@ -297,6 +318,103 @@ public class QueryDb {
 			ex.printStackTrace();
 		}
 		return info;
+	}
+	
+	public static String[][] queryCart(String userID) {
+		String query1 = "select COUNT(*) from phieumuon where IDngdung = '" + userID + "';";
+		String query2 = "select * from phieumuon where IDngdung = '" + userID + "';";
+		int a= 0 ;
+		String[][] cart = null;
+		try {
+			stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query1);
+			if(!rs.first()) {
+				///////
+			} else {
+				do {
+					a = rs.getInt("count(*)");
+				}while (rs.next());
+				cart = new String[a][5];
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		
+		if (cart != null) {
+			try {
+				stmt = ConnectDb.getConnection().createStatement();
+				ResultSet rs = stmt.executeQuery(query2);
+				if(!rs.first()) {
+					///////
+				} else {
+					int count = 0;
+					do {
+						cart[count][0] = rs.getString("IDphieumuon");
+						String libraryID = rs.getString("IDthuvien");
+						switch(libraryID) {
+						case "TV001":
+							cart[count][1] = "Thư viện Tạ Quang Bửu";
+							break;
+						case "TV002":
+							cart[count][1] = "Thư viện Quốc gia";
+							break;
+						case "TV003":
+							cart[count][1] = "Thư viện Hà Nội";
+							break;
+						}
+						cart[count][2] = rs.getString("ngaymuon");
+						cart[count][3] = rs.getString("ngaytra");
+						cart[count][4] = rs.getString("tienung");
+						count++;
+					}while (rs.next());
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return cart;
+	}
+	
+	public static String[][] queryBookCart(String cartID) {
+		String query1 = "select COUNT(*) from phieumuon_sach where idphieumuon = '" + cartID + "';";
+		String[][] bookCart = null;
+		int a= 0 ;
+		try {
+			stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query1);
+			if(!rs.first()) {
+				/////////////
+			} else {
+				do {
+					a = rs.getInt("count(*)");
+				} while(rs.next());
+				bookCart = new String[a][3];
+			}
+		}catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+		
+		if (bookCart != null) {
+			try {
+				String query2 = "select * from phieumuon_sach where idphieumuon = '" + cartID + "';";
+				stmt = ConnectDb.getConnection().createStatement();
+				ResultSet rs = stmt.executeQuery(query2);
+				if(!rs.first()) {
+					///////
+				} else {
+					int count = 0;
+					do {
+						bookCart[count][0] = rs.getString("ISBN");
+						bookCart[count][1] = rs.getString("tensach");
+						bookCart[count][2] = rs.getString("giabia");
+						count++;
+					}while (rs.next());
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return bookCart;
 	}
 
 	public static String[] getLibstatuss() {
@@ -323,7 +441,48 @@ public class QueryDb {
 		// System.out.println(bookInfoss[i]);
 		// }
 
-//		queryAuthorName("luke");
-//		queryAccInfo("loitv");
+		// queryAuthorName("luke");
+		// queryAccInfo("loitv");
+//		String a = "O'sds";
+//		a = a.replace("'","\\'");
+//		System.out.println(a);
+		
+//		String query1 = "select COUNT(*) from phieumuon where IDngdung = 'admin';";
+//		int count = 0;
+//		try {
+//			stmt = ConnectDb.getConnection().createStatement();
+//			ResultSet rs = stmt.executeQuery(query1);
+//			if(!rs.first()) {
+//				System.out.println("No result!");
+//			} else {
+//				do {
+//					count = rs.getInt("count(*)");
+//				}while(rs.next());
+//			}
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//		}
+//		System.out.println(count);
+		
+		String[][] cart = queryCart("admin");
+		if (cart != null) {
+			for (int i = 0; i < cart.length; i ++) {
+				System.out.println(cart[i][0]);
+				System.out.println(cart[i][1]);
+				System.out.println(cart[i][2]);
+				System.out.println(cart[i][3]);
+				System.out.println(cart[i][4]);
+				System.out.println("--------------------------");
+//				for (int j = 0; j < )
+				String[][] bookCart = queryBookCart(cart[i][0]);
+				for (int j = 0; j < bookCart.length; j ++) {
+					System.out.println(bookCart[j][0]);
+					System.out.println(bookCart[j][1]);
+					System.out.println(bookCart[j][2]);
+					System.out.println("----------------");
+				}
+				System.out.println("/////////////////////////////");
+			}
+		}
 	}
 }

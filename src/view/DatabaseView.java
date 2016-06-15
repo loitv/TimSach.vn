@@ -23,7 +23,7 @@ public class DatabaseView extends JFrame {
 	private JTextField tfURL, tfISBN1, tfISBN2, tfISBN3, tfISBN4, tfTitle1, tfTitle2, tfTotal, tfRemain, tfOnLoan,
 			tfCate, tfPub, tfYear, tfPrice, tfPage, tfLang, tfAuID1, tfAuID2, tfAu2ID1, tfAu2ID2, tfAuFirstName,
 			tfAuLastName, tfAuFirstName2, tfAuLastName2, tfDesc, tfAuthor, tfAuthor2, tfImage;
-	private JButton btnParse, btnUpdateSach, btnUpdateInfo, btnUpdateAuBook, btnUpdateAu, btnUpdateXML, btnGetImage;
+	private JButton btnParse, btnUpdateDB, btnUpdateXML, btnGetImage;
 
 	private JRadioButton lib1, lib2, lib3;
 	private ButtonGroup lib;
@@ -307,15 +307,9 @@ public class DatabaseView extends JFrame {
 
 		JPanel panel18 = new JPanel();
 		panel18.setLayout(new GridLayout(1, 5, 5, 5));
-		btnUpdateSach = new JButton("Update 'Sach'");
-		btnUpdateInfo = new JButton("Update 'TT Sach'");
-		btnUpdateAuBook = new JButton("Update 'TG-Sach'");
-		btnUpdateAu = new JButton("Update 'Tac gia'");
+		btnUpdateDB = new JButton("ADD NEW BOOK");
 		btnUpdateXML = new JButton("Update file XML");
-		panel18.add(btnUpdateSach);
-		panel18.add(btnUpdateInfo);
-		panel18.add(btnUpdateAuBook);
-		panel18.add(btnUpdateAu);
+		panel18.add(btnUpdateDB);
 		panel18.add(btnUpdateXML);
 		add(panel18);
 
@@ -331,19 +325,7 @@ public class DatabaseView extends JFrame {
 	}
 
 	public void setButtonUpdateSachActionListener(ActionListener al) {
-		this.btnUpdateSach.addActionListener(al);
-	}
-
-	public void setButtonUpdateInfoActionListener(ActionListener al) {
-		this.btnUpdateInfo.addActionListener(al);
-	}
-
-	public void setButtonUpdateAuBookActionListener(ActionListener al) {
-		this.btnUpdateAuBook.addActionListener(al);
-	}
-
-	public void setButtonUpdateAuthorActionListener(ActionListener al) {
-		this.btnUpdateAu.addActionListener(al);
+		this.btnUpdateDB.addActionListener(al);
 	}
 
 	public void setButtonUpdateXMLActionListener(ActionListener al) {
@@ -445,19 +427,7 @@ public class DatabaseView extends JFrame {
 	}
 
 	public JButton getBtnUpdateSach() {
-		return btnUpdateSach;
-	}
-
-	public JButton getBtnUpdateInfo() {
-		return btnUpdateInfo;
-	}
-
-	public JButton getBtnUpdateAuBook() {
-		return btnUpdateAuBook;
-	}
-
-	public JButton getBtnUpdateAu() {
-		return btnUpdateAu;
+		return btnUpdateDB;
 	}
 
 	public JButton getBtnUpdateXML() {

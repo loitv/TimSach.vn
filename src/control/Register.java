@@ -31,11 +31,16 @@ public class Register extends HttpServlet {
 		boolean ok = QueryDb.queryAcc(id);
 		if (ok) {
 			DatabaseController.insertAcc(id, pwd);
-			out.println("<html><head><title>Register</title></head><body>");
-			out.println("<h3>Your account has been created successfull!</h3>");
+			out.println("<html><head><title>Register</title>"
+					+ "<meta http-equiv=\"Refresh\" content=\"2;url=index.jsp\">"
+					+ "</head><body>");
+			out.println("<h3>Your account has been created successfull!</h3>"
+					+ "<h4>You will be redirected to home page after 2 second</h4>");
 			out.println("</body></html>");
 		} else {
-			out.println("<html><head><title>Login</title></head><body>");
+			out.println("<html><head><title>Login</title>"
+					+ "<meta http-equiv=\"Refresh\" content=\"2;url=login.jsp\">"
+					+ "</head><body>");
 			out.println("<h3>This account has been existed!<br>Please choose another account!</h3>");
 			out.println("</body></html>");
 		}

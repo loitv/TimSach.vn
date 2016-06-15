@@ -7,44 +7,7 @@
 <title>Home page</title>
 <link rel="stylesheet" type="text/css" href="js/slick/slick.css">
 <link rel="stylesheet" type="text/css" href="js/slick/slick-theme.css">
-<link rel="stylesheet" type="text/css" href="style/menubar.css">
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script
-	src="http://www.red-team-design.com/wp-content/uploads/2011/02/modernizr-1.6.min_.js"></script>
-<script>
-	$(document)
-			.ready(
-					function() {
-						if (!Modernizr.input.placeholder) {
-
-							var placeholderText = $('#search').attr(
-									'placeholder');
-
-							$('#search').attr('value', placeholderText);
-							$('#search').addClass('placeholder');
-
-							$('#search').focus(function() {
-								if (($('#search').val() == placeholderText)) {
-									$('#search').attr('value', '');
-									$('#search').removeClass('placeholder');
-								}
-							});
-
-							$('#search')
-									.blur(
-											function() {
-												if (($('#search').val() == placeholderText)
-														|| (($('#search').val() == ''))) {
-													$('#search').addClass(
-															'placeholder');
-													$('#search').attr('value',
-															placeholderText);
-												}
-											});
-						}
-					});
-</script>
-
+<script src="js/jquery-latest.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/slick/slick.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 	$(document).on('ready', function() {
@@ -86,17 +49,7 @@ body {
 	text-align: Center;
 }
 
-#searchmenubar input[type="text"] {
-	background: url(images/search-dark.png) no-repeat 10px 6px white;
-	border: 0 none;
-	font: 12px Arial, Helvetica, Sans-serif;
-	color: black;
-	width: 150px;
-	padding: 6px 15px 6px 35px;
-	border-radius: 20px;
-	margin-top: 15px;
-	float: right;
-}
+
 
 #searchbox {
 	background: #eaf8fc;
@@ -211,73 +164,17 @@ body {
 
 </head>
 <body>
-	<header class="main-header">
-		<a class="logo" href="index.jsp"> <img src="images/library1.png" />
-		</a>
-		<ul class="main-nav">
-
-			
-			<li class="dropdown"><a href="#">Category</a>
-				<ul class="drop-nav">
-					<li class="flyout"><a href="#">IT Books</a>
-						<ul class="flyout-nav">
-							<li><a href="#">Web Development</a></li>
-							<li><a href="Search?q=programming&type=category">Programming</a></li>
-							<li><a href="#">Database</a></li>
-							<li><a href="#">Operating System</a></li>
-						</ul></li>
-					<li class="flyout"><a href="#">ET Books</a>
-						<ul class="flyout-nav">
-							<li><a href="Search?q=digital+design&type=category">Digital
-									Design</a></li>
-							<li><a href="#">Circuits</a></li>
-							<li><a href="#">Network</a></li>
-							<li><a href="#">Signal Processing</a></li>
-						</ul></li>
-					<li><a href="Search?q=vanhoc&type=category">Literature</a></li>
-
-					<li><a href="#">Magazine</a></li>
-				</ul></li>
-			<li><a href="#">Management</a></li>
-			<li><a href="#">Contact</a></li>
-			<li><a id="account" href="login.jsp">Login</a></li>
-		</ul>
-		<form id="searchmenubar" action="Search" method='get'
-			accept-charset="UTF-8">
-			<div>
-				<input type="text" name="q" placeholder="Search..."><input
-					type="hidden" name="type" value="title">
-			</div>
-		</form>
-	</header>
-	<div id="accountfield">
-	<p id="accounttext">Welcome  <a id="accurl" href="#"></a></p>
-	</div>
-	<%String user = (String) session.getAttribute("user");
+	<%@ include file="header.jsp" %>
+	<br><br>
 	
-	if (user == null) {
-		
-	} else {
-		%>
-		
-		<script>
-		document.getElementById("account").textContent="Logout";
-		document.getElementById("accurl").innerHTML="<%= user%>";
-		document.getElementById("accurl").setAttribute("href", "Account?id=<%= user%>");
-		document.getElementById("account").setAttribute("href", "Logout");
-		document.getElementById("account").setAttribute("onclick", "window.location.reload(true);")
-		</script>
-	<%
-	}
-	%>
-	
+	<!--  
 	<div>
 	<a href="Logout" onclick="window.location.reload(true);">Kill session</a>
 	</div>
-	
+	-->
 	
 	<div>
-		<form action="Search" method='get' accept-charset="UTF-8">
+		<form action="search.jsp" method='get' accept-charset="UTF-8">
 			<div id="searchbox">
 				<input id="search" type="text" name="q" placeholder="Type here">
 				<input id="submit" type="submit" value="Search">
@@ -295,42 +192,42 @@ body {
 
 	<section class="regular slider">
 		<div>
-			<a href="Book?isbn=8934974119814"> <img
+			<a href="book.jsp?isbn=8934974119814"> <img
 				src="images/8934974119814.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=8934974125778"> <img
+			<a href="book.jsp?isbn=8934974125778"> <img
 				src="images/8934974125778.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=8934974111788"> <img
+			<a href="book.jsp?isbn=8934974111788"> <img
 				src="images/8934974111788.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=8934974099208"> <img
+			<a href="book.jsp?isbn=8934974099208"> <img
 				src="images/8934974099208.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=978-1-4493-9330-4"> <img
+			<a href="book.jsp?isbn=978-1-4493-9330-4"> <img
 				src="images/978-1-4493-9330-4.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=978-1-4493-9321-2"> <img
+			<a href="book.jsp?isbn=978-1-4493-9321-2"> <img
 				src="images/978-1-4493-9321-2.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=978-1-4493-8267-4"> <img
+			<a href="book.jsp?isbn=978-1-4493-8267-4"> <img
 				src="images/978-1-4493-8267-4.jpg">
 			</a>
 		</div>
 		<div>
-			<a target="_blank" href="Book?isbn=978-1-4493-9991-7"> <img
+			<a href="book.jsp?isbn=978-1-4493-9991-7"> <img
 				src="images/978-1-4493-9991-7.jpg">
 			</a>
 		</div>

@@ -1,7 +1,6 @@
 package function;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/SavePersonalInfo")
 public class SavePersonalInfo extends HttpServlet {
-	private ArrayList<String> info;
 	private static final long serialVersionUID = 1L;
        
     public SavePersonalInfo() {
@@ -20,20 +18,22 @@ public class SavePersonalInfo extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
-	info = new ArrayList<String>();
-	info.add(request.getParameter("id"));
-	info.add(request.getParameter("name"));
-	info.add(request.getParameter("gender"));
-	info.add(request.getParameter("birthday"));
-	info.add(request.getParameter("addr"));
-	info.add(request.getParameter("phone"));
-	info.add(request.getParameter("email"));
+	String[] info = new String[7];
+	info[0] = request.getParameter("id");
+	info[1] = request.getParameter("name");
+	info[2] = request.getParameter("gender");
+	info[3] = request.getParameter("birthday");
+	info[4] = request.getParameter("addr");
+	info[5] = request.getParameter("phone");
+	info[6] = request.getParameter("email");
 	for (String a:info) {
 		System.out.println(a);
 	}
 	DatabaseController.updatePerInfo(info);
-	
+	request.getSession().setAttribute("userInfo", info);
 	}
+	
+	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);

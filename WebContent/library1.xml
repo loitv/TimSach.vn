@@ -86,5 +86,23 @@
   		The explosion in communications and embedded computing technologies has brought with it a host of new skill requirements for electrical and electronics engineers, students, and hobbyists. With engineers expected to have such diverse expertise, they need comprehensive, easy-to-understand guidance on the fundamentals of digital design.<br /><br />Enter McGraw-Hill’s Complete Digital Design. Written by an experienced electrical engineer and networking hardware designer, this book helps you understand and navigate the interlocking components, architectures, and practices necessary to design and implement digital systems. It includes:<br /><br />* Real world implementation of microprocessor-based digital systems<br />* Broad presentation of supporting analog circuit principles<br />* Building complete systems with basic design elements and the latest technologies<br /><br />Complete Digital Design will teach you how to develop a customized set of requirements for any design problem — and then research and evaluate available components and technologies to solve it. Perfect for the professional, the student, and the hobbyist alike, this is one volume you need handy at all times!
   	</description>
   </book>
+  <book ISBN="978-1-49194-074-7">
+  	<title>Learning Swift</title>
+  	<description>
+  		Get hands-on experience with Apple's Swift programming language by building real working apps. With this practical guide, skilled programmers with little or no knowledge of Apple development will learn how to code with Swift 2 by developing three complete, tightly linked versions of the Notes application for the OS X, iOS, and watchOS platforms. In the process, you'll learn Swift's fundamentals, including its syntax and features, along with the basics of the Cocoa, CocoaTouch, and WatchKit frameworks. This book teaches you how to use common design patterns for Swift, how to structure an application for Apple's platforms, and how to submit working apps to the App Store.
+  	</description>
+  </book>
+  <book ISBN="978-1-4493-1428-6">
+  	<title>High Performance MySQL, 3rd Edition</title>
+  	<description>
+  		How can you bring out MySQL's full power? With High Performance MySQL, you'll learn advanced techniques for everything from designing schemas, indexes, and queries to tuning your MySQL server, operating system, and hardware to their fullest potential. This guide also teaches you safe and practical ways to scale applications through replication, load balancing, high availability, and failover. Updated to reflect recent advances in MySQL and InnoDB performance, features, and tools, this third edition not only offers specific examples of how MySQL works, it also teaches you why this system works as it does, with illustrative stories and case studies that demonstrate MySQL's principles in action. With this book, you'll learn how to think in MySQL.
+  	</description>
+  </book>
+  <book ISBN="978-0-596-80272-1">
+  	<title>Mac OS X Snow Leopard Pocket Guide</title>
+  	<description>
+  		Whether you're new to the Mac or a longtime user, this handy book is the quickest way to get up to speed on Snow Leopard. Packed with concise information in an easy-to-read format, Mac OS X Snow Leopard Pocket Guide covers what you need to know and is an ideal resource for problem-solving on the fly. This book goes right to the heart of Snow Leopard, with details on system preferences, built-in applications, and utilities. You'll also find configuration tips, keyboard shortcuts, guides for troubleshooting, lots of step-by-step instructions, and more.
+  	</description>
+  </book>
 </library>
 

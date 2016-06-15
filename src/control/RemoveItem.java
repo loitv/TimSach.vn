@@ -34,7 +34,7 @@ public class RemoveItem extends HttpServlet {
 			}
 			request.getSession().setAttribute("orderSession", orderBooks);
 		}
-		response.sendRedirect("Order");
+		response.sendRedirect("Cart");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

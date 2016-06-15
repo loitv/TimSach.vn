@@ -1,12 +1,4 @@
 
-
-body {
-	margin: 0;
-	background: #ecf0f1;
-	color: #fff;
-	font-family: sans-serif;
-	line-height: 1.5;
-}
 ul {
   list-style: none;
   padding: 0;
@@ -15,7 +7,7 @@ ul {
 
 #accountfield {
 	margin: auto;
-  width: 68.5%;
+  width: 64.5%;
   min-height: 20px;
 }
 #accounttext {
@@ -26,6 +18,10 @@ ul {
   color: white;
   text-align: left;
   padding-left:15px;
+  padding-top:3px;
+  font-family: sans-serif;
+  height: 20px;
+  
   /*margin-left: 5px;*/
 }
 #accurl{
@@ -36,10 +32,10 @@ ul {
 
 .main-header {
   margin: auto;
-  width: 66%;
+  width: 62%;
   min-height: 70px;
   padding: 1em 2em 1em 0em;
-  
+  font-family: sans-serif;
   border-top: none;
   border-radius: 0 0 5px 5px;
   background: #2980b9;
@@ -56,7 +52,7 @@ ul {
   margin-top: 5px;
 }
   .logo::before {
-    color: #fff;
+    color: #2980b9;
     content: "\e001";
     font-weight: normal;
     font-style: normal;

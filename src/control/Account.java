@@ -30,6 +30,9 @@ public class Account extends HttpServlet {
 		
 		request.getSession().setAttribute("user", id);
 		
+//		for (int i = 0 ; i < userInfo.le)
+		
+		request.setAttribute("userInfo", userInfor);
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/account.jsp");
 		dispatcher.forward(request, response);
 	}

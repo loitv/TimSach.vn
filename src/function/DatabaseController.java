@@ -30,16 +30,15 @@ public class DatabaseController {
 	List<String> list;
 	private XMLProcessing xml;
 	private String AuID2;
+	private static String IDPM;
 	private ArrayList<String> ISBNs;
-	private ArrayList<String> ISBNs1;
-	private ArrayList<String> ISBNs2;
-	private ArrayList<String> ISBNs3;
-	private ArrayList<String> AuthorID;
+	private ArrayList<String> AuthorIDs;
 
 	public DatabaseController() {
 		dbv = new DatabaseView();
-
-		// Handle event for button 'Parse HTML'
+		////////////////////////////////////////
+		//Handle event for button 'Parse HTML'//
+		////////////////////////////////////////
 		dbv.setButtonParseActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -86,7 +85,7 @@ public class DatabaseController {
 							dbv.getTfAuID1().setText(AuID);
 							dbv.getTfAuID2().setText(AuID);
 						}
-						if (authors.size() == 2) {
+						if (authors.size() > 1) {
 							dbv.getTfAuthor().setText(authors.get(0));
 							dbv.getTfAuthor2().setText(authors.get(1));
 							ArrayList<String> names1 = splitString(authors.get(0), " ");
@@ -117,7 +116,7 @@ public class DatabaseController {
 
 						// Set random number for these fields: Tong so, SL trong
 						// kho, SL cho muon, gia bia.
-						int total = new Random().nextInt(20) + 1;
+						int total = new Random().nextInt(10) + 1;
 						int remain = 0;
 						do {
 							remain = new Random().nextInt(20) + 1;
@@ -137,64 +136,30 @@ public class DatabaseController {
 			}
 		});
 
-		// Handle event for button 'Update sach'
+		//////////////////////////////////////////////
+		// Handle event for button 'ADD NEW BOOK'//
+		//////////////////////////////////////////////
 		dbv.setButtonUpdateSachActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// String book = null;
-				if (dbv.getLib1().isSelected()) {
-					getISBNs1();
-					String isbn = dbv.getTfISBN1().getText();
-					int count = 0;
-					for (int i = 0; i < ISBNs1.size(); i++) {
-						if (isbn.equalsIgnoreCase(ISBNs1.get(i))) {
-							count++;
-						}
-					}
-					if (count > 0) {
-						System.out.println("Sach da co trong thu vien");
+				
+				ISBNs = new ArrayList<String>();
+				try {
+					Statement stmt = ConnectDb.getConnection().createStatement();
+					String query = "select ISBN from sach;";
+					ResultSet rs = stmt.executeQuery(query);
+					if (!rs.first()) {
+						System.out.println("Empty data!");
 					} else {
-						updateBook("SACHTV01", isbn);
+						do {
+							ISBNs.add(rs.getString("ISBN"));
+						} while (rs.next());
 					}
+				} catch (SQLException ex) {
+					ex.printStackTrace();
 				}
-				if (dbv.getLib2().isSelected()) {
-					getISBNs2();
-					String isbn = dbv.getTfISBN1().getText();
-					int count = 0;
-					for (int i = 0; i < ISBNs2.size(); i++) {
-						if (isbn.equalsIgnoreCase(ISBNs2.get(i))) {
-							count++;
-						}
-					}
-					if (count > 0) {
-						System.out.println("Sach da co trong thu vien");
-					} else {
-						updateBook("SACHTV02", isbn);
-					}
-				}
-				if (dbv.getLib3().isSelected()) {
-					getISBNs3();
-					String isbn = dbv.getTfISBN1().getText();
-					int count = 0;
-					for (int i = 0; i < ISBNs3.size(); i++) {
-						if (isbn.equalsIgnoreCase(ISBNs3.get(i))) {
-							count++;
-						}
-					}
-					if (count > 0) {
-						System.out.println("Sach da co trong thu vien");
-					} else {
-						updateBook("SACHTV03", isbn);
-					}
-				}
-			}
-		});
-
-		// handle event for button 'Update thong tin sach'
-		dbv.setButtonUpdateInfoActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getISBNs();
+				
+				//~~~~~~~~~~update table 'SACH'~~~~~~~~~~~//
 				String isbn = dbv.getTfISBN2().getText();
 				int count = 0;
 				for (int i = 0; i < ISBNs.size(); i++) {
@@ -204,8 +169,8 @@ public class DatabaseController {
 				}
 				if (count > 0) {
 					System.out.println("Sach da co trong Database");
-				} else {
-					String query = "INSERT into THONGTINSACH values (?,?,?,?,?,?,?,?);";
+				} else { // them sach moi vao trong database
+					String query = "INSERT into SACH values (?,?,?,?,?,?,?,?);";
 					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
 							.prepareStatement(query)) {
 						insertStmt.setString(1, isbn);
@@ -220,140 +185,131 @@ public class DatabaseController {
 					} catch (SQLException ex) {
 						ex.printStackTrace();
 					}
-				}
-
-			}
-		});
-
-		// handle event for button 'Update tac gia'
-		dbv.setButtonUpdateAuthorActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				AuthorID = new ArrayList<String>();
-				try {
-					Statement stmt = ConnectDb.getConnection().createStatement();
-					String query = "select * from tacgia;";
-					ResultSet rs = stmt.executeQuery(query);
-					if (!rs.first()) {
-						System.out.println("Empty data!");
-					} else {
-						do {
-							AuthorID.add(rs.getString("IDAuthor"));
-						} while (rs.next());
+					
+					//~~~~~~~~~~Update table 'THUVIEN_SACH'~~~~~~~~~~~//
+					String libID = "TV001";
+					if (dbv.getLib2().isSelected()) {
+						libID = "TV002";
+					} else if (dbv.getLib3().isSelected()) {
+						libID = "TV003";
 					}
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-				String AuID = dbv.getTfAuID1().getText();
-				String firstName1 = dbv.getTfAuFirstName().getText();
-				String lastName1 = dbv.getTfAuLastName().getText();
-				int count = 0;
-				for (int i = 0; i < AuthorID.size(); i++) {
-					if (AuID.equalsIgnoreCase(AuthorID.get(i))) {
-						count++;
-					}
-				}
-				if (count > 0) {
-					System.out.println("Author 1 has been existed in Database");
-				} else {
-					String query = "INSERT into TACGIA values (?,?,?);";
-					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
-							.prepareStatement(query)) {
-						insertStmt.setString(1, AuID);
-						insertStmt.setString(2, lastName1);
-						insertStmt.setString(3, firstName1);
+					int total = Integer.parseInt(dbv.getTfTotal().getText());
+					int inStock = Integer.parseInt(dbv.getTfRemain().getText());
+					int onLoan = Integer.parseInt(dbv.getTfOnLoan().getText());
+
+					String query2 = "INSERT into THUVIEN_SACH values (?,?,?,?,?);";
+					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection().prepareStatement(query2)) {
+						insertStmt.setString(1, libID);
+						insertStmt.setString(2, isbn);
+						insertStmt.setInt(3, total);
+						insertStmt.setInt(4, inStock);
+						insertStmt.setInt(5, onLoan);
 						insertStmt.executeUpdate();
 					} catch (SQLException ex) {
 						ex.printStackTrace();
 					}
-				}
+					
+					//~~~~~~~~~~~~~Update table 'TACGIA' and 'TACGIA_SACH'~~~~~~~~~~~~//
+					// Get list of author has been existed in DB
+					AuthorIDs = new ArrayList<String>();
+					try {
+						Statement stmt = ConnectDb.getConnection().createStatement();
+						String query3 = "select * from tacgia;";
+						ResultSet rs = stmt.executeQuery(query3);
+						if (!rs.first()) {
 
-				String author2 = dbv.getTfAuthor2().getText();
-				if (author2.length() > 0) {
-					String AuID2 = dbv.getTfAu2ID1().getText();
-					String firstName2 = dbv.getTfAuFirstName2().getText();
-					String lastName2 = dbv.getTfAuLastName2().getText();
+						} else {
+							do {
+								AuthorIDs.add(rs.getString("IDTacgia"));
+							} while (rs.next());
+						}
+					} catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+					// insert author 1
+					String AuID1 = dbv.getTfAuID1().getText();
+					String firstName1 = dbv.getTfAuFirstName().getText();
+					String lastName1 = dbv.getTfAuLastName().getText();
+					String fullName1 = dbv.getTfAuthor().getText();
 					int count2 = 0;
-					for (int i = 0; i < AuthorID.size(); i++) {
-						if (AuID2.equalsIgnoreCase(AuthorID.get(i))) {
+					for (int i = 0; i < AuthorIDs.size(); i++) {
+						if (AuID1.equalsIgnoreCase(AuthorIDs.get(i))) {
 							count2++;
 						}
 					}
 					if (count2 > 0) {
-						System.out.println("Author 2 has been existed in Database");
+//						System.out.println("Author 1 has been existed in Database");
 					} else {
-						String query = "INSERT into TACGIA values (?,?,?);";
+						String query4 = "INSERT into TACGIA values (?,?,?,?,?);";
 						try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
-								.prepareStatement(query)) {
-							insertStmt.setString(1, AuID2);
-							insertStmt.setString(2, lastName2);
-							insertStmt.setString(3, firstName2);
+								.prepareStatement(query4)) {
+							insertStmt.setString(1, AuID1);
+							insertStmt.setString(2, lastName1);
+							insertStmt.setString(3, firstName1);
+							insertStmt.setString(4, fullName1);
+							insertStmt.setString(5, firstName1.toLowerCase() + lastName1.toLowerCase() + "@xmail.com");
 							insertStmt.executeUpdate();
 						} catch (SQLException ex) {
 							ex.printStackTrace();
 						}
-					}
-				}
-			}
-		});
-
-		// handle events for button 'update Tacgia-sach'
-		dbv.setButtonUpdateAuBookActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ArrayList<String> newISBNs = new ArrayList<String>();
-				try {
-					Statement stmt = ConnectDb.getConnection().createStatement();
-					String query = "select * from tacgia_sach;";
-					ResultSet rs = stmt.executeQuery(query);
-					if (!rs.first()) {
-						System.out.println("Empty data!");
-					} else {
-						do {
-							newISBNs.add(rs.getString("ISBN"));
-						} while (rs.next());
-					}
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-
-				String isbn = dbv.getTfISBN3().getText();
-				int count = 0;
-				for (int i = 0; i < newISBNs.size(); i++) {
-					if (isbn.equalsIgnoreCase(newISBNs.get(i))) {
-						count++;
-					}
-				}
-				if (count > 0) {
-					System.out.println("DB has been had the same data");
-				} else {
-					String auID1 = dbv.getTfAuID1().getText();
-					String query = "INSERT into tacgia_sach values (?,?);";
-					try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
-							.prepareStatement(query)) {
-						insertStmt.setString(1, auID1);
-						insertStmt.setString(2, isbn);
-						insertStmt.executeUpdate();
-					} catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-
-					if (dbv.getTfAu2ID1().getText().length() > 0) {
-						String query2 = "INSERT into tacgia_sach values (?,?);";
+						
+						String query4a = "INSERT into tacgia_sach values (?,?);";
 						try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
-								.prepareStatement(query2)) {
-							insertStmt.setString(1, dbv.getTfAu2ID1().getText());
+								.prepareStatement(query4a)) {
+							insertStmt.setString(1, AuID1);
 							insertStmt.setString(2, isbn);
 							insertStmt.executeUpdate();
 						} catch (SQLException ex) {
 							ex.printStackTrace();
 						}
 					}
+					// insert author2
+					String author2 = dbv.getTfAuthor2().getText();
+					if (author2.length() > 0) {
+						String AuID2 = dbv.getTfAu2ID1().getText();
+						String firstName2 = dbv.getTfAuFirstName2().getText();
+						String lastName2 = dbv.getTfAuLastName2().getText();
+						int count3 = 0;
+						for (int i = 0; i < AuthorIDs.size(); i++) {
+							if (AuID2.equalsIgnoreCase(AuthorIDs.get(i))) {
+								count3++;
+							}
+						}
+						if (count3 > 0) {
+							System.out.println("Author 2 has been existed in Database");
+						} else {
+							String query5 = "INSERT into TACGIA values (?,?,?,?,?);";
+							try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+									.prepareStatement(query5)) {
+								insertStmt.setString(1, AuID2);
+								insertStmt.setString(2, lastName2);
+								insertStmt.setString(3, firstName2);
+								insertStmt.setString(4, author2);
+								insertStmt.setString(5, firstName2.toLowerCase() + lastName2.toLowerCase() + "@xmail.com");
+								insertStmt.executeUpdate();
+							} catch (SQLException ex) {
+								ex.printStackTrace();
+							}
+							
+							String query5a = "INSERT into tacgia_sach values (?,?);";
+							try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+									.prepareStatement(query5a)) {
+								insertStmt.setString(1, AuID2);
+								insertStmt.setString(2, isbn);
+								insertStmt.executeUpdate();
+							} catch (SQLException ex) {
+								ex.printStackTrace();
+							}
+						}
+					}
+					/////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
 		});
-
-		// handle event for button 'update XML'
+		
+		////////////////////////////////////////
+		//handle event for button 'update XML'//
+		////////////////////////////////////////
 		dbv.setButtonUpdateXMLActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -375,8 +331,10 @@ public class DatabaseController {
 				}
 			}
 		});
-
-		// handle event for button save Image
+		
+		///////////////////////////////////////
+		// handle event for button save Image//
+		///////////////////////////////////////
 		dbv.setButtonGetImageActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -391,28 +349,9 @@ public class DatabaseController {
 				}
 			}
 		});
-
 	}
+	
 
-
-	public void updateBook(String book, String isbn) {
-		String title = dbv.getTfTitle1().getText();
-		int total = Integer.parseInt(dbv.getTfTotal().getText());
-		int remain = Integer.parseInt(dbv.getTfRemain().getText());
-		int onLoan = Integer.parseInt(dbv.getTfOnLoan().getText());
-
-		String query = "INSERT into " + book + " values (?,?,?,?,?);";
-		try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection().prepareStatement(query)) {
-			insertStmt.setString(1, isbn);
-			insertStmt.setString(2, title);
-			insertStmt.setInt(3, total);
-			insertStmt.setInt(4, remain);
-			insertStmt.setInt(5, onLoan);
-			insertStmt.executeUpdate();
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
 
 	public String generateIDAuthor(String firstName1, String lastName1) {
 		String AuID = "";
@@ -429,7 +368,7 @@ public class DatabaseController {
 				do {
 					firstNames.add(rs.getString("firstName"));
 					lastNames.add(rs.getString("lastName"));
-					IDAuthors.add(rs.getString("IDAuthor"));
+					IDAuthors.add(rs.getString("IDTacgia"));
 				} while (rs.next());
 			}
 		} catch (SQLException ex) {
@@ -470,77 +409,6 @@ public class DatabaseController {
 		return AuID;
 	}
 
-	public void getISBNs1() {
-		ISBNs1 = new ArrayList<String>();
-		try {
-			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from sachtv01;";
-			ResultSet rs = stmt.executeQuery(query);
-			if (!rs.first()) {
-				System.out.println("Empty data!");
-			} else {
-				do {
-					ISBNs1.add(rs.getString("ISBN"));
-				} while (rs.next());
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void getISBNs2() {
-		ISBNs2 = new ArrayList<String>();
-		try {
-			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from sachtv02;";
-			ResultSet rs = stmt.executeQuery(query);
-			if (!rs.first()) {
-				System.out.println("Empty data!");
-			} else {
-				do {
-					ISBNs2.add(rs.getString("ISBN"));
-				} while (rs.next());
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void getISBNs3() {
-		ISBNs3 = new ArrayList<String>();
-		try {
-			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from sachtv03;";
-			ResultSet rs = stmt.executeQuery(query);
-			if (!rs.first()) {
-				System.out.println("Empty data!");
-			} else {
-				do {
-					ISBNs3.add(rs.getString("ISBN"));
-				} while (rs.next());
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void getISBNs() {
-		ISBNs = new ArrayList<String>();
-		try {
-			Statement stmt = ConnectDb.getConnection().createStatement();
-			String query = "select * from thongtinsach;";
-			ResultSet rs = stmt.executeQuery(query);
-			if (!rs.first()) {
-				System.out.println("Empty data!");
-			} else {
-				do {
-					ISBNs.add(rs.getString("ISBN"));
-				} while (rs.next());
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
 
 	public ArrayList<String> splitString(String str1, String str2) {
 		StringTokenizer st = new StringTokenizer(str1, str2);
@@ -551,6 +419,7 @@ public class DatabaseController {
 		return authors;
 	}
 	
+	// Them tai khoan moi vao database
 	public static void insertAcc(String id, String pwd) {
 		String query = "INSERT into taikhoan values (?,?,?);";
 		try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
@@ -580,48 +449,106 @@ public class DatabaseController {
 	}
 	
 	// upadate personal information
-	public static void updatePerInfo(ArrayList<String> personalInfo) {
+	public static void updatePerInfo(String[] personalInfo) {
 		String query = "UPDATE thongtincanhan SET name=? ,gender=?, birthday=?, address=?, phone=?, email=? WHERE id=?";
 		try (PreparedStatement addStmt = (PreparedStatement) ConnectDb.getConnection()
 				.prepareStatement(query)) {
 
-			addStmt.setString(1, personalInfo.get(1));
-			addStmt.setString(2, personalInfo.get(2));
-			addStmt.setString(3, personalInfo.get(3));
-			addStmt.setString(4, personalInfo.get(4));
-			addStmt.setString(5, personalInfo.get(5));
-			addStmt.setString(6, personalInfo.get(6));
-			addStmt.setString(7, personalInfo.get(0));
+			addStmt.setString(1, personalInfo[1]);
+			addStmt.setString(2, personalInfo[2]);
+			addStmt.setString(3, personalInfo[3]);
+			addStmt.setString(4, personalInfo[4]);
+			addStmt.setString(5, personalInfo[5]);
+			addStmt.setString(6, personalInfo[6]);
+			addStmt.setString(7, personalInfo[0]);
 			addStmt.executeUpdate();
 
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
+	
+	// them phieu muon sach moi
+	public static void updatePhieu(String[] pm, List<String> orderBooks) {
+		String PMID = generatePMID();
+		String query = "INSERT into phieumuon values (?,?,?,?,?,?);";
+		try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+				.prepareStatement(query)) {
+			insertStmt.setString(1, PMID);
+			insertStmt.setString(2, pm[0]);
+			insertStmt.setString(3, pm[1]);
+			insertStmt.setString(4, pm[2]);
+			insertStmt.setString(5, pm[3]);
+			insertStmt.setDouble(6, Double.parseDouble(pm[4]));
+			insertStmt.executeUpdate();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		
+		String query1 = "INSERT into phieumuon_sach values (?,?,?,?);";
+		for (int i = 0; i < orderBooks.size(); i+=4) {
+			try (PreparedStatement insertStmt = (PreparedStatement) ConnectDb.getConnection()
+					.prepareStatement(query1)) {
+				insertStmt.setString(1, PMID);
+				insertStmt.setString(2, orderBooks.get(i));
+				insertStmt.setString(3, orderBooks.get(i+1));
+				insertStmt.setDouble(4, Double.parseDouble(orderBooks.get(i+2)));
+				
+				insertStmt.executeUpdate();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+			String query2 = "UPDATE thuvien_sach SET slTrongKho = slTrongKho - 1, slChoMuon = slChoMuon + 1 WHERE IDThuvien = '" + orderBooks.get(3) + "' AND ISBN = '" + orderBooks.get(i) + "';";
+			try {
+				Statement stmt = ConnectDb.getConnection().createStatement();
+				stmt.executeUpdate(query2);
+				
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	
+	public static String generatePMID() {
+		String PMID = "";
+		String query = "select * from phieumuon;";
+		try {
+			Statement stmt = ConnectDb.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			int count = 0;
+			if (!rs.first()) {
+//				System.out.println("Empty!");
+			} else {
+				do {
+					count++;
+				}while (rs.next());
+			}
+			
+			String str1, str2 = Integer.toString(count + 1);
+			if (count < 9) {
+				str1 = "PM00";
+			} else if (count >= 9 & count < 99) {
+				str1 = "PM0";
+			} else {
+				str1 = "PM";
+			}
+			PMID = str1 + str2;
+			
+		} catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+		IDPM = PMID;
+		return PMID;
+	}
+	
+	public static String getIDPM() {
+		return IDPM;
+	}
+
+
 
 	public static void main(String[] args) {
-		// String author = "Andrew Alle, Daniel Emma";
-		// StringTokenizer st = new StringTokenizer(author, ",");
-		// ArrayList<String> name = new ArrayList<String>();
-		// while (st.hasMoreTokens()) {
-		// name.add(st.nextToken().trim());
-		// }
-		//
-		// if (name.size() < 2) {
-		//
-		// }
-		// for (int i = 0; i < name.size(); i++) {
-		// System.out.println(name.get(i));
-		// }
-
 		new DatabaseController();
-
-		// int total = new Random().nextInt(20) + 1;
-		// int remain = 0;
-		// do {
-		// remain = new Random().nextInt(20) + 1;
-		// } while ((total - remain) > 5 | (total - remain) < 0);
-		// System.out.println(total + " " + remain);
-
 	}
 }

@@ -1,6 +1,6 @@
 eclipse.preferences.version=1
+encoding//WebContent/historyCart.jsp=UTF-8
 encoding//src/control/Book.java=UTF-8
-encoding//src/control/Order.java=UTF-8
 encoding//src/control/QueryDb.java=UTF-8
 encoding//src/control/Search.java=UTF-8
 encoding//src/control/XMLProcessing.java=UTF-8

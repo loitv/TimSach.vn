@@ -8,107 +8,23 @@
 <%@ page import="control.*"%>
 <%@ page import="function.*"%>
 <%
-	String isbn = (String) request.getAttribute("isbn");
-	String[] bookInfo = (String[]) request.getAttribute("bookInfo");
-	String[] libStatus = (String[]) request.getAttribute("libStatus");
-	String[] authors = (String[]) request.getAttribute("authors");
+	request.setCharacterEncoding("UTF-8");
+		String isbn = request.getParameter("isbn");
+		new QueryDb(isbn);
+		String[] bookInfo = QueryDb.getBookInfoss();
+		String[] libStatus = QueryDb.getLibstatuss();
+		String[] authors = QueryDb.getAuthorss();
+		UnAccent ua = new UnAccent();
+		String[] addrs = new String[libStatus.length];
+		for (int i = 0; i < addrs.length; i ++) {
+			addrs[i] = ua.unAccent(libStatus[i]);
+		}
+		//String addr = ua.unAccent(libStatus[2]);
 %>
 
 <title><%=bookInfo[0]%></title>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
-<script type="text/javascript">
-	var points = [ {}, {} ];
-	var map;
-	window.onload = function() {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-				maximumAge : 60 * 1000,
-				timeout : 5 * 60 * 1000,
-				enableHighAccuracy : true
-			});
-		} else
-			document.getElementById("mapArea").innerHTML = "Your browser does not support HTML5 Geolocation!!!";
-	}
-
-	function onSuccess(position) {
-		// get my position - source position
-		points[0].lat = position.coords.latitude;
-		points[0].long = position.coords.longitude;
-
-		// get destination position
-		var localAddress = "31 Trang Thi, Hoan Kiem, Ha Noi".replace(" ", "+");
-		var xmlhttpAddr = new XMLHttpRequest();
-		var url = "https://maps.googleapis.com/maps/api/geocode/json?address="
-				+ localAddress;
-		xmlhttpAddr.open("GET", url, false);
-		xmlhttpAddr.send();
-		if (xmlhttpAddr.readyState == 4 && xmlhttpAddr.status == 200) {
-			var result = xmlhttpAddr.responseText;
-			var jsResult = eval("(" + result + ")");
-			points[1].lat = jsResult.results[0].geometry.location.lat;
-			points[1].long = jsResult.results[0].geometry.location.lng;
-
-		}
-		var mapOptions = {
-			center : new google.maps.LatLng(points[0].lat, points[0].long),
-			zoom : 10,
-			mapTypeId : google.maps.MapTypeId.ROADMAP
-		};
-		map = new google.maps.Map(document.getElementById("mapArea"),
-				mapOptions);
-		var latlngbounds = new google.maps.LatLngBounds();
-		for (var i = 0; i < points.length; i++) {
-			var marker = new google.maps.Marker(
-					{
-						position : new google.maps.LatLng(points[i].lat,
-								points[i].long),
-						map : map
-					});
-			latlngbounds.extend(marker.position);
-		}
-		map.fitBounds(latlngbounds);
-		drawPath();
-	}
-
-	function drawPath() {
-		var directionsService = new google.maps.DirectionsService();
-		var poly = new google.maps.Polyline({
-			strokeColor : "#FF0000",
-			strokeWeight : 4
-		});
-		var request = {
-			origin : new google.maps.LatLng(points[0].lat, points[0].long),
-			destination : new google.maps.LatLng(points[1].lat, points[1].long),
-			travelMode : google.maps.DirectionsTravelMode.DRIVING
-		};
-		directionsService.route(request, function(response, status) {
-			if (status == google.maps.DirectionsStatus.OK) {
-				new google.maps.DirectionsRenderer({
-					map : map,
-					polylineOptions : poly,
-					directions : response
-				});
-			}
-		});
-	}
-
-	function onError(error) {
-		switch (error.code) {
-		case PERMISSION_DENIED:
-			alert("User denied permission");
-			break;
-		case TIMEOUT:
-			alert("Geolocation timed out");
-			break;
-		case POSITION_UNAVAILABLE:
-			alert("Geolocation information is not available");
-			break;
-		default:
-			alert("Unknown error");
-			break;
-		}
-	}
-</script>
+<script src="js/map.js" type="text/javascript" charset="utf-8"></script>
 <style type="text/css">
 body {
 	align: center;
@@ -161,6 +77,10 @@ td {
 	padding: 3px;
 }
 
+a {
+text-decoration: none;
+}
+
 .text1 {
 	margin: 0 auto;
 	width: 65%;
@@ -202,6 +122,9 @@ td {
 </style>
 </head>
 <body>
+
+<%@ include file="header.jsp" %>
+<br><br>
 	<h2 class="text1"><%=bookInfo[0]%></h2>
 	<br>
 
@@ -217,17 +140,17 @@ td {
 					</tr>
 					<tr class="rt">
 						<td class="item">Authors:</td>
-						<td class="itempro"><%=authors[0] + " " + authors[1]%> <%
- 	if (authors.length > 2) {
- 		for (int i = 2; i < authors.length; i += 2) {
- %> , <%=authors[i] + " " + authors[i + 1]%> <%
- 	}
- 	}
- %></td>
+						<td class="itempro"><a href="search.jsp?q=<%=authors[0] + " " + authors[1]%>&type=author"><%=authors[0] + " " + authors[1]%></a> <%
+						 	if (authors.length > 2) {
+						 		for (int i = 2; i < authors.length; i += 2) {
+						 		%> , <a href="search.jsp?q=<%=authors[i] + " " + authors[i + 1]%>&type=author"><%=authors[i] + " " + authors[i + 1]%></a> <%
+						 		}
+						 	}
+						 %></td>
 					</tr>
 					<tr class="rt">
 						<td class="item">Publisher:</td>
-						<td class="itempro"><%=bookInfo[2]%></td>
+						<td class="itempro"><a href="search.jsp?q=<%=bookInfo[2]%>&type=publisher"><%=bookInfo[2]%></a></td>
 					</tr>
 					<tr class="rt">
 						<td class="item">Year:</td>
@@ -257,7 +180,10 @@ td {
 	<br>
 	<h3 class="text1">Available in:</h3>
 	<br>
-	<form method='get' action='Order'>
+	<!-- 
+	<form method='get' action='Cart'>
+	 -->
+	
 		<table id="table3">
 			<tr class="trt">
 				<td>Library</td>
@@ -274,27 +200,51 @@ td {
 				<td><%=libStatus[i + 2]%></td>
 				<td><%=libStatus[i + 3]%></td>
 				<td><%=libStatus[i + 5]%></td>
+				<td align="center">
+					<a href="Cart?isbn=<%= isbn%>&libID=<%=libStatus[i]%>"><img style="height:25px;" src="images/icon/addtocart.png"></a></td>
+				<!-- 
 				<td><input class="inner-button" type='checkbox' name='libID'
 					value='<%=libStatus[i]%>' /></td>
+				 -->
+				
 			</tr>
 			<%
 				}
 			%>
+			<!-- 
 			<tr class="trc">
 				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
 				<td><p></p> <input class="inner-button" type='submit'
-					value='BORROW' /></td>
+					value='Add to Cart' /></td>
 			</tr>
+			 -->
+			
 		</table>
+		<!-- 
 		<input type="hidden" name="isbn" value="<%= isbn%>">
 	</form>
+		 -->
+		
 	<br />
 	<br />
 	<br />
-
+	<% 
+	int count = 0;
+	for (int i = 0; i < libStatus.length; i += 6) {
+		count++;
+		%>
+		<input type="hidden" id="libAddr<%=count %>" value="<%=libStatus[i]%>"/>
+		<%
+		
+	}
+	%>
+	<input type="hidden" id="addrNumber" value="<%=count %>"/>
+	<%
+	%>
+	
 
 	<div id="mapArea" style="height: 500px;"></div>
 

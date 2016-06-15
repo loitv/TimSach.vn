@@ -4,11 +4,22 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<%@ page import="control.*"%>
+	<%@ page import="function.*"%>
+	<%
+	request.setCharacterEncoding("UTF-8");
+	String search = request.getParameter("q");
+	String type = request.getParameter("type");
+	
+	Search.getResult(type, search);
+	String[] isbns = Search.getIsbns2();
+	String[] titles = Search.getTitles2();
+	String[] images = Search.getImages();
+	String[] descs = Search.getDescs2();
+	%>
+<title>Search results</title>
 <style type="text/css">
-h2 {
-	margin-left: 187px;
-}
+
 
 table {
 	border-collapse: collapse;
@@ -16,7 +27,7 @@ table {
 	border-style: solid;
 	border-color: Silver;
 	padding: 3px;
-	width: 70%;
+	width: 65%;
 }
 
 td {
@@ -24,6 +35,11 @@ td {
 	border-style: solid;
 	border-color: Silver;
 	padding: 3px;
+}
+
+.heading3 {
+margin: auto;
+width: 65%;
 }
 
 .rh {
@@ -47,22 +63,18 @@ td {
 </style>
 </head>
 <body>
-	<%@ page import="control.*"%>
-	<%@ page import="function.*"%>
-	<%
-		String[] isbns = (String[]) request.getAttribute("isbn");
-		String[] titles = (String[]) request.getAttribute("title");
-		String[] images = (String[]) request.getAttribute("image");
-		String[] descs = (String[]) request.getAttribute("desc");
-	%>
-
-	<h2>Kết quả tìm kiếm</h2>
+	
+	
+	<%@ include file="header.jsp" %>
+	<br><br>
+	<div class="heading3"><h3>Search for : <i><%= search %></i></h3></div>
+	
 
 	<!----------------------------------------------------------------------------------------------->
 	<%
 		if (titles.length == 0) {
 	%>
-	<h2>NOT FOUND!</h2>
+	<h3>NOT FOUND!</h3>
 	<%
 		} else {
 	%>
